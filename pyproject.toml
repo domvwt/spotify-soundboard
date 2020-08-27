@@ -18,6 +18,8 @@ requests = "^2.24.0"
 tqdm = "^4.48.2"
 python-dotenv = "^0.14.0"
 flask_caching = "^1.9.0"
+brotli = "1.0.7"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
