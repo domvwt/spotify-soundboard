@@ -17,8 +17,6 @@ from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
 
-server = app.server
-
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
 
@@ -26,7 +24,9 @@ cache = Cache(
     app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": "cache-directory-app"}
 )
 
-TIMEOUT = 1800  # In seconds; 1800s = 30mins
+server = app.server
+
+TIMEOUT = 1800  # In seconds; 1800s = 30 minutes
 
 
 @cache.memoize(timeout=TIMEOUT)
