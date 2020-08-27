@@ -1,6 +1,6 @@
 from typing import List
 
-import spotify_soundboard.settings
+import spotify_dash.settings
 import requests
 import os
 from tqdm import tqdm
