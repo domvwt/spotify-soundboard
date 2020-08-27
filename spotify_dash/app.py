@@ -17,6 +17,8 @@ from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
 
+server = app.server
+
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
 
