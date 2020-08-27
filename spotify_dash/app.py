@@ -89,9 +89,9 @@ app.layout = html.Div(
                                 id="country-input",
                                 options=[
                                     {"label": country, "value": country}
-                                    for country in cached_world_view()[
-                                        "Country"
-                                    ].unique()
+                                    for country in np.sort(cached_world_view()[
+                                                               "Country"
+                                                           ].unique())
                                 ],
                                 placeholder="Select a country...",
                             )
