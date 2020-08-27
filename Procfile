@@ -1,1 +1,1 @@
-web: gunicorn app:server
+web: gunicorn spotify_dash/app:server
