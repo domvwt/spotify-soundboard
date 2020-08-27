@@ -15,8 +15,7 @@ def world_view() -> pd.DataFrame:
         world_view_df.loc[:, "Streams"] / world_view_df.loc[:, "Population"]
     )
 
-    # Drop Greenland streams since they are actually Global!
-    # TODO: Fix this at source
+    # Drop incorrectly labelled Greenland streams...
     world_view_df = world_view_df[world_view_df["Country"] != "Greenland"]
 
     return world_view_df

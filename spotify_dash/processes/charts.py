@@ -20,7 +20,6 @@ def no_bg(func):
     return wrapper
 
 
-# TODO: Drop global steams (ISO2 = gl)
 @no_bg
 def country_sunburst(chart_data):
     fig = px.sunburst(
