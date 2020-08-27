@@ -43,7 +43,8 @@ country_table_col_dict = [
 ]
 
 app.layout = html.Div(
-    [
+    style={"padding-bottom": "2rem"},
+    children=[
         dbc.NavbarSimple(
             brand="clefbeam",
             color="dark",
@@ -174,7 +175,7 @@ app.layout = html.Div(
                 ),
             ],
         ),
-    ]
+    ],
 )
 
 
