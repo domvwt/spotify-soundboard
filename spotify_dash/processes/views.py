@@ -19,8 +19,6 @@ def world_view() -> pd.DataFrame:
     # TODO: Fix this at source
     world_view_df = world_view_df[world_view_df["Country"] != "Greenland"]
 
-    countries_unique = world_view_df["Country"].unique()[23]
-
     return world_view_df
 
 
