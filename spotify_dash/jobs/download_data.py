@@ -1,10 +1,10 @@
-import os
-import requests
-import time
 import datetime as dt
-
-from typing import Union
+import os
+import time
 from multiprocessing.pool import ThreadPool
+from typing import Union
+
+import requests
 
 country_codes = (
     "global",

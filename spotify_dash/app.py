@@ -1,24 +1,21 @@
-from dash_table.Format import Format
-
-import processes.charts as charts
-
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
 import dash_table as ddt
-
+import numpy as np
+from dash.dependencies import Input, Output
+from dash_table.Format import Format
 from flask_caching import Cache
 
+import processes.charts as charts
 import processes.views as views
-
-from dash.dependencies import Input, Output
-
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
 
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
+DARK_GREY = "rgb(8, 8, 8)"
 
 cache = Cache(
     app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": "cache-directory-app"}
@@ -89,9 +86,9 @@ app.layout = html.Div(
                                 id="country-input",
                                 options=[
                                     {"label": country, "value": country}
-                                    for country in cached_world_view()[
-                                        "Country"
-                                    ].unique()
+                                    for country in np.sort(
+                                        cached_world_view()["Country"].unique()
+                                    )
                                 ],
                                 placeholder="Select a country...",
                             )
@@ -158,7 +155,7 @@ app.layout = html.Div(
                                                     style_cell={
                                                         "textAlign": "left",
                                                         "backgroundColor": SILVER,
-                                                        "color": "rgb(8, 8, 8)",
+                                                        "color": DARK_GREY,
                                                     },
                                                     # style_cell={},
                                                     style_as_list_view=True,

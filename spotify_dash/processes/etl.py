@@ -1,13 +1,11 @@
+import datetime
 import itertools
 import os
 import pickle
 from collections import Counter
-import datetime
+from typing import Iterable
 
 import pandas as pd
-
-from typing import List, Iterable
-
 from tqdm import tqdm
 
 from processes import apicall as api

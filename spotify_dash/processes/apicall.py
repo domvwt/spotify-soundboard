@@ -1,9 +1,11 @@
+import os
 from typing import List
 
-import spotify_dash.settings
 import requests
-import os
 from tqdm import tqdm
+
+# noinspection PyUnresolvedReferences
+import spotify_dash.settings
 
 BASE_URL = "https://api.spotify.com/v1/"
 TRACKS_ENDPOINT = BASE_URL + "tracks"
@@ -93,6 +95,6 @@ def get_genres_from_tracks(track_ids: List[str]):
     return artist_genre_map
 
 
-def divide_chunks(l, n):
-    for i in range(0, len(l), n):
-        yield l[i : i + n]
+def divide_chunks(iterable, n):
+    for i in range(0, len(iterable), n):
+        yield iterable[i : i + n]
