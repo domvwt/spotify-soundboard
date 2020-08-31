@@ -66,15 +66,8 @@ app.layout = html.Div(
         ),
         # MAIN APP CONTAINER
         dbc.Container(
-            style={
-                "ml": "0rem",
-                "mr": "0rem",
-                "mt": "10rem",
-                "mb": "10rem",
-            },  # Control spacing from top, bottom, and sides of page.
             children=[
                 dbc.Row(
-                    style={"pt": "5000px"},
                     children=[  # ROW 1
                         dbc.Col([html.Br(), html.H1("Spotify Soundboard")]),
                     ],
@@ -83,7 +76,7 @@ app.layout = html.Div(
                     style={"mb": "10"},
                     children=[
                         dbc.Col(
-                            md=10,
+                            md=12,
                             lg=6,
                             children=dcc.Dropdown(  # DROPDOWN MENU
                                 id="country-input",
@@ -96,14 +89,13 @@ app.layout = html.Div(
                                 placeholder="Select a country...",
                             )
                         ),
-                        dbc.Col(),
                     ],
                 ),
                 dbc.Row(html.Br()),
                 dbc.Row(
                     [
                         dbc.Col(
-                            md=10,
+                            md=12,
                             lg=6,
                             children=[
                                 dbc.Card(
@@ -132,7 +124,7 @@ app.layout = html.Div(
                             ]
                         ),
                         dbc.Col(
-                            md=10,
+                            md=12,
                             lg=6,
                             children=[
                                 dbc.Card(
@@ -164,7 +156,6 @@ app.layout = html.Div(
                                                         "backgroundColor": SILVER,
                                                         "color": DARK_GREY,
                                                     },
-                                                    # style_cell={},
                                                     style_as_list_view=True,
                                                     sort_action="native",
                                                     page_action="native",
