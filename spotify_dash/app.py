@@ -132,7 +132,6 @@ app.layout = html.Div(
                             ]
                         ),
                         dbc.Col(
-                            # sm=10,
                             md=10,
                             lg=6,
                             children=[
