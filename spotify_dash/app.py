@@ -83,7 +83,9 @@ app.layout = html.Div(
                     style={"mb": "10"},
                     children=[
                         dbc.Col(
-                            dcc.Dropdown(  # DROPDOWN MENU
+                            md=10,
+                            lg=6,
+                            children=dcc.Dropdown(  # DROPDOWN MENU
                                 id="country-input",
                                 options=[
                                     {"label": country, "value": country}
@@ -101,6 +103,8 @@ app.layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(
+                            md=10,
+                            lg=6,
                             children=[
                                 dbc.Card(
                                     [
@@ -128,6 +132,9 @@ app.layout = html.Div(
                             ]
                         ),
                         dbc.Col(
+                            # sm=10,
+                            md=10,
+                            lg=6,
                             children=[
                                 dbc.Card(
                                     [
