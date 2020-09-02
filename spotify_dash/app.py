@@ -16,7 +16,7 @@ import processes.views as views
 # TODO: Artist Trends
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard")
 
 cache = Cache(
     app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": "cache-directory-app"}
