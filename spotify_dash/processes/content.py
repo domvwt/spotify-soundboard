@@ -26,7 +26,6 @@ def render_world_map(choropleth_view):
         dbc.Row(
             dbc.Col(
                 md=12,
-                # lg=6,
                 style={"padding-top": 10},
                 children=dcc.Dropdown(
                     id="choropleth-input",
@@ -80,7 +79,6 @@ def render_country_profile(world_view, country_view):
             children=[
                 dbc.Col(
                     md=12,
-                    # lg=6,
                     style={"padding-top": 10},
                     children=dcc.Dropdown(
                         id="country-input",
@@ -109,7 +107,7 @@ def render_country_profile(world_view, country_view):
                                 dbc.CardBody(
                                     [
                                         dcc.Graph(
-                                            id="country-sunburst",  # COUNTRY SUNBURST CHART
+                                            id="country-sunburst",
                                             figure=charts.country_sunburst(
                                                 country_view
                                             ),
@@ -135,7 +133,7 @@ def render_country_profile(world_view, country_view):
                                     style={"padding-left": 40, "padding-right": 40,},
                                     children=[
                                         html.Br(),
-                                        ddt.DataTable(  # COUNTRY TABLE
+                                        ddt.DataTable(
                                             id="country-table",
                                             columns=country_table_col_dict,
                                             data=country_view.to_dict("records"),
