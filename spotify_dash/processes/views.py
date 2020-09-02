@@ -1,4 +1,5 @@
 import pandas as pd
+
 import processes.etl as etl
 
 
@@ -44,3 +45,46 @@ def country_view(country_name, world_view_df=None):
     country_view_df["Position"] = range(1, len(country_view_df) + 1)
 
     return country_view_df
+
+
+def choropleth_view(world_view_df):
+    top_artists = (
+        world_view_df.copy()
+        .groupby(["Country"], group_keys=False)
+        .apply(lambda x: x.sort_values(by="Streams", ascending=False))
+        .reset_index()
+        .groupby(["Country"], group_keys=False)
+        .first()
+        .reset_index()
+        .loc[:, ["Country", "Artist"]]
+        .set_index("Country")
+    )
+
+    top_genres = (
+        world_view_df.copy()
+        .groupby(["Country", "Genre"], group_keys=False)[["Streams"]]
+        .sum()
+        .reset_index()
+        .groupby(["Country"], group_keys=False)
+        .apply(lambda x: x.sort_values(by="Streams", ascending=False))
+        .reset_index()
+        .groupby(["Country"], group_keys=False)
+        .first()
+        .reset_index()
+        .loc[:, ["Country", "Genre"]]
+        .set_index("Country")
+    )
+
+    total_streams = (
+        world_view_df.copy()
+        .groupby(["Country", "ISO3"])[["Streams", "Streams_per_capita"]]
+        .sum()
+        .reset_index()
+        .set_index("Country")
+    )
+
+    result = pd.concat([total_streams, top_artists, top_genres], axis=1).reset_index()
+    result["ISO3"] = result["ISO3"].str.upper()
+    result = result.rename(columns={"Artist": "Top Artist", "Genre": "Top Genre"})
+
+    return result
