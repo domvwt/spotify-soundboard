@@ -1,6 +1,6 @@
-import plotly.express as px
 import numpy as np
 import pandas as pd
+import plotly.express as px
 
 QUAL_COLS = px.colors.qualitative.Bold
 SILVER = "rgb(131, 148, 150)"
@@ -34,8 +34,9 @@ def country_sunburst(chart_data):
 
 
 @no_bg
-def world_choropleth(chart_data: pd.DataFrame):
-    # TODO: select streams / streams per capita
+def world_choropleth(chart_data: pd.DataFrame, scope=None):
+    if scope is None:
+        scope = "world"
     chart_data.loc[:, "Streams (log10)"] = np.log(chart_data["Streams"])
     fig = px.choropleth(
         data_frame=chart_data,
@@ -52,6 +53,7 @@ def world_choropleth(chart_data: pd.DataFrame):
         locationmode="ISO-3",
         color_continuous_scale=px.colors.sequential.Agsunset,
         projection="miller",
+        scope=scope,
     )
     fig.update_geos(
         visible=False,
@@ -60,7 +62,7 @@ def world_choropleth(chart_data: pd.DataFrame):
         showcountries=False,
         showland=True,
         landcolor=SILVER,
-        lataxis={"range": [-40, 90]},
+        lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},

@@ -12,9 +12,29 @@ SLATE = "rgb(30, 67, 74)"
 DARK_GREY = "rgb(8, 8, 8)"
 
 
-def render_world_map(world_view):
+def render_world_map(choropleth_view):
+    scope_options = [
+        {"label": "World", "value": "world"},
+        {"label": "Africa", "value": "africa"},
+        {"label": "Asia", "value": "asia"},
+        {"label": "Europe", "value": "europe"},
+        {"label": "North America", "value": "north america"},
+        {"label": "South America", "value": "south america"},
+    ]
     return [
         html.H1("Global View"),
+        dbc.Row(
+            dbc.Col(
+                md=12,
+                # lg=6,
+                style={"padding-top": 10},
+                children=dcc.Dropdown(
+                    id="choropleth-input",
+                    options=scope_options,
+                    placeholder="Select a region...",
+                ),
+            )
+        ),
         html.Br(),
         dbc.Row(
             children=dbc.Col(
@@ -27,7 +47,8 @@ def render_world_map(world_view):
                                 children=dcc.Graph(
                                     id="world-choropleth",
                                     figure=charts.world_choropleth(
-                                        views.choropleth_view(world_view)
+                                        views.choropleth_view(choropleth_view),
+                                        scope=None,
                                     ),
                                     config={"displayModeBar": False},
                                 )
@@ -59,9 +80,9 @@ def render_country_profile(world_view, country_view):
             children=[
                 dbc.Col(
                     md=12,
-                    lg=6,
+                    # lg=6,
                     style={"padding-top": 10},
-                    children=dcc.Dropdown(  # DROPDOWN MENU
+                    children=dcc.Dropdown(
                         id="country-input",
                         options=[
                             {"label": country, "value": country}

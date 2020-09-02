@@ -12,11 +12,13 @@ import processes.views as views
 # TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
 # TODO: Global settings at top of page - date range
 # TODO: Refactor content to functions and modules for each view
-# TODO: TSNE Viz - 2d / 3d - Colour by continent
+# TODO: TSNE Viz - 2d / 3d - Colour by continent - Space Exploration
 # TODO: Artist Trends
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard")
+app = dash.Dash(
+    __name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard"
+)
 
 cache = Cache(
     app.server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": "cache-directory-app"}
@@ -80,6 +82,16 @@ app.layout = html.Div(
         ),
     ],
 )
+
+
+@app.callback(
+    Output(component_id="world-choropleth", component_property="figure"),
+    [Input(component_id="choropleth-input", component_property="value")],
+)
+def update_stream_atlas(input_value):
+    return charts.world_choropleth(
+        chart_data=views.choropleth_view(cached_world_view()), scope=input_value
+    )
 
 
 @app.callback(
