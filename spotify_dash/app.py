@@ -71,7 +71,6 @@ def render_world_map():
 
 
 def render_country_profile():
-
     country_table_col_dict = [
         {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
     ] + [
@@ -87,7 +86,6 @@ def render_country_profile():
         html.Br(),
         dbc.Row(dbc.Col(html.H1("Country Profile"))),
         dbc.Row(
-            style={"mb": "10"},
             children=[
                 dbc.Col(
                     md=12,
@@ -114,7 +112,8 @@ def render_country_profile():
                     lg=6,
                     children=[
                         dbc.Card(
-                            [
+                            style={"margin-bottom": 15},
+                            children=[
                                 dbc.CardHeader(
                                     html.H3("Stream Breakdown", className="card-title",)
                                 ),
@@ -131,7 +130,7 @@ def render_country_profile():
                                         )
                                     ]
                                 ),
-                            ]
+                            ],
                         )
                     ],
                 ),
@@ -140,7 +139,8 @@ def render_country_profile():
                     lg=6,
                     children=[
                         dbc.Card(
-                            [
+                            style={"margin-bottom": 15},
+                            children=[
                                 dbc.CardHeader(
                                     html.H3("Top Artists", className="card-title")
                                 ),
@@ -171,7 +171,7 @@ def render_country_profile():
                                         ),
                                     ],
                                 ),
-                            ]
+                            ],
                         )
                     ],
                 ),
@@ -181,7 +181,7 @@ def render_country_profile():
 
 
 app.layout = html.Div(
-    style={"padding-bottom": "2rem"},
+    style={"padding-bottom": "2rem",},
     children=[
         dbc.NavbarSimple(
             brand="SpotifySoundboard",
@@ -204,6 +204,12 @@ app.layout = html.Div(
         ),
         # MAIN APP CONTAINER
         dbc.Container(
+            style={
+                "padding-left": "auto",
+                "margin-left": "auto",
+                "padding-right": "auto",
+                "margin-right": "auto",
+            },
             children=[
                 html.Br(),
                 *render_world_map(),
