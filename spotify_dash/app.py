@@ -11,6 +11,12 @@ from flask_caching import Cache
 import processes.charts as charts
 import processes.views as views
 
+# TODO: Board status - coverage stats: date range, countries, artists, streams; top global genre, artist; last updated
+# TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
+# TODO: Global settings at top of page - date range
+# TODO: Refactor content to functions and modules for each view
+# TODO: TSNE Viz - 2d / 3d - Colour by continent
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
 
 SILVER = "rgb(131, 148, 150)"
@@ -36,17 +42,149 @@ def cached_country_view(country_name):
     return views.country_view(country_name, cached_world_view())
 
 
-country_table_col_dict = [
-    {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
-] + [
-    {"name": "Streams", "id": "Streams", "type": "numeric", "format": Format(group=",")}
-]
+def render_world_map():
+    return [
+        html.H1("Global View"),
+        html.Br(),
+        dbc.Row(
+            children=dbc.Col(
+                width=12,
+                children=dbc.Card(
+                    children=[
+                        dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
+                        dbc.CardBody(
+                            dbc.Jumbotron(
+                                children=dcc.Graph(
+                                    id="world-choropleth",
+                                    figure=charts.world_choropleth(
+                                        views.choropleth_view(cached_world_view())
+                                    ),
+                                    config={"displayModeBar": False},
+                                )
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ),
+    ]
+
+
+def render_country_profile():
+
+    country_table_col_dict = [
+        {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
+    ] + [
+        {
+            "name": "Streams",
+            "id": "Streams",
+            "type": "numeric",
+            "format": Format(group=","),
+        }
+    ]
+
+    return [
+        html.Br(),
+        dbc.Row(dbc.Col(html.H1("Country Profile"))),
+        dbc.Row(
+            style={"mb": "10"},
+            children=[
+                dbc.Col(
+                    md=12,
+                    lg=6,
+                    style={"padding-top": 10},
+                    children=dcc.Dropdown(  # DROPDOWN MENU
+                        id="country-input",
+                        options=[
+                            {"label": country, "value": country}
+                            for country in np.sort(
+                                cached_world_view()["Country"].unique()
+                            )
+                        ],
+                        placeholder="Select a country...",
+                    ),
+                ),
+            ],
+        ),
+        html.Br(),
+        dbc.Row(
+            [
+                dbc.Col(
+                    md=12,
+                    lg=6,
+                    children=[
+                        dbc.Card(
+                            [
+                                dbc.CardHeader(
+                                    html.H3("Stream Breakdown", className="card-title",)
+                                ),
+                                dbc.CardBody(
+                                    [
+                                        dcc.Graph(
+                                            id="country-sunburst",  # COUNTRY SUNBURST CHART
+                                            figure=charts.country_sunburst(
+                                                cached_country_view(
+                                                    country_name="United Kingdom"
+                                                )
+                                            ),
+                                            config={"displayModeBar": False},
+                                        )
+                                    ]
+                                ),
+                            ]
+                        )
+                    ],
+                ),
+                dbc.Col(
+                    md=12,
+                    lg=6,
+                    children=[
+                        dbc.Card(
+                            [
+                                dbc.CardHeader(
+                                    html.H3("Top Artists", className="card-title")
+                                ),
+                                dbc.CardBody(
+                                    style={"padding-left": 40, "padding-right": 40,},
+                                    children=[
+                                        html.Br(),
+                                        ddt.DataTable(  # COUNTRY TABLE
+                                            id="country-table",
+                                            columns=country_table_col_dict,
+                                            data=cached_country_view(
+                                                country_name="United Kingdom"
+                                            ).to_dict("records"),
+                                            style_header={
+                                                "backgroundColor": SLATE,
+                                                "color": SILVER,
+                                            },
+                                            style_cell={
+                                                "textAlign": "left",
+                                                "backgroundColor": SILVER,
+                                                "color": DARK_GREY,
+                                            },
+                                            style_as_list_view=True,
+                                            sort_action="native",
+                                            page_action="native",
+                                            page_current=0,
+                                            page_size=10,
+                                        ),
+                                    ],
+                                ),
+                            ]
+                        )
+                    ],
+                ),
+            ]
+        ),
+    ]
+
 
 app.layout = html.Div(
     style={"padding-bottom": "2rem"},
     children=[
         dbc.NavbarSimple(
-            brand="clefbeam",
+            brand="SpotifySoundboard",
             color="dark",
             dark=True,
             brand_style={"font-weight": "bold", "color": "white"},
@@ -67,109 +205,11 @@ app.layout = html.Div(
         # MAIN APP CONTAINER
         dbc.Container(
             children=[
-                dbc.Row(
-                    children=[  # ROW 1
-                        dbc.Col([html.Br(), html.H1("Spotify Soundboard")]),
-                    ],
-                ),
-                dbc.Row(
-                    style={"mb": "10"},
-                    children=[
-                        dbc.Col(
-                            md=12,
-                            lg=6,
-                            children=dcc.Dropdown(  # DROPDOWN MENU
-                                id="country-input",
-                                options=[
-                                    {"label": country, "value": country}
-                                    for country in np.sort(
-                                        cached_world_view()["Country"].unique()
-                                    )
-                                ],
-                                placeholder="Select a country...",
-                            )
-                        ),
-                    ],
-                ),
-                dbc.Row(html.Br()),
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            md=12,
-                            lg=6,
-                            children=[
-                                dbc.Card(
-                                    [
-                                        dbc.CardHeader(
-                                            html.H3(
-                                                "Country Profile",
-                                                className="card-title",
-                                            )
-                                        ),
-                                        dbc.CardBody(
-                                            [
-                                                dcc.Graph(
-                                                    id="country-sunburst",  # COUNTRY SUNBURST CHART
-                                                    figure=charts.country_sunburst(
-                                                        cached_country_view(
-                                                            country_name="United Kingdom"
-                                                        )
-                                                    ),
-                                                    config={"displayModeBar": False},
-                                                )
-                                            ]
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                        dbc.Col(
-                            md=12,
-                            lg=6,
-                            children=[
-                                dbc.Card(
-                                    [
-                                        dbc.CardHeader(
-                                            html.H3(
-                                                "Top Artists", className="card-title"
-                                            )
-                                        ),
-                                        dbc.CardBody(
-                                            style={
-                                                "padding-left": 40,
-                                                "padding-right": 40,
-                                            },
-                                            children=[
-                                                html.Br(),
-                                                ddt.DataTable(  # COUNTRY TABLE
-                                                    id="country-table",
-                                                    columns=country_table_col_dict,
-                                                    data=cached_country_view(
-                                                        country_name="United Kingdom"
-                                                    ).to_dict("records"),
-                                                    style_header={
-                                                        "backgroundColor": SLATE,
-                                                        "color": SILVER,
-                                                    },
-                                                    style_cell={
-                                                        "textAlign": "left",
-                                                        "backgroundColor": SILVER,
-                                                        "color": DARK_GREY,
-                                                    },
-                                                    style_as_list_view=True,
-                                                    sort_action="native",
-                                                    page_action="native",
-                                                    page_current=0,
-                                                    page_size=10,
-                                                ),
-                                            ],
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                    ]
-                ),
+                html.Br(),
+                *render_world_map(),
+                html.Br(),
+                *render_country_profile(),
+                html.Br(),
             ],
         ),
     ],
