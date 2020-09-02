@@ -38,7 +38,7 @@ def cached_country_view(country_name):
 
 
 app.layout = html.Div(
-    style={"padding-bottom": "2rem",},
+    style={"padding-bottom": "2rem"},
     children=[
         dbc.NavbarSimple(
             brand="SpotifySoundboard",
