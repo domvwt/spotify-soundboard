@@ -15,11 +15,11 @@ DARK_GREY = "rgb(8, 8, 8)"
 def render_world_map(choropleth_view):
     scope_options = [
         {"label": "World", "value": "world"},
-        {"label": "Africa", "value": "africa"},
-        {"label": "Asia", "value": "asia"},
         {"label": "Europe", "value": "europe"},
         {"label": "North America", "value": "north america"},
         {"label": "South America", "value": "south america"},
+        {"label": "Asia", "value": "asia"},
+        {"label": "Africa", "value": "africa"},
     ]
     return [
         html.H1("Global View"),
