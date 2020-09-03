@@ -13,9 +13,6 @@ DARK_GREY = "rgb(8, 8, 8)"
 DEEP_TEAL = "rgb(7, 54, 66)"
 
 
-# TODO: Daterange in header
-
-
 def render_dashboard_status(world_view):
     world_view = world_view.copy().reset_index()
 
@@ -23,31 +20,31 @@ def render_dashboard_status(world_view):
     artists = world_view.loc[:, "Artist"].nunique()
     genres = world_view.loc[:, "Genre"].nunique()
     countries = world_view.loc[:, "Country"].nunique()
+    weeks = world_view.loc[:, "date"].nunique()
+    date_start = world_view.loc[:, "date"].min()
+    date_end = world_view.loc[:, "date"].max()
 
     dash_stats = [
         {"name": "Streams", "value": f"{streams:,d}"},
         {"name": "Artists", "value": f"{artists:,d}"},
         {"name": "Genres", "value": f"{genres:,d}"},
         {"name": "Countries", "value": f"{countries:,d}"},
+        {"name": "Period", "value": f"{date_start} to {date_end}"},
     ]
 
     def make_stats_items(header, body):
-        return html.Div(
-            children=[
-                html.H4(header, style={"padding-left": 5}),
-                html.H5(body, style={"margin-bottom": 20, "padding-left": 5}),
-            ]
-        )
+        return dcc.Markdown(f"**{header}**: {body}")
 
     stats_object = [make_stats_items(d["name"], d["value"]) for d in dash_stats]
 
     return [
         dbc.Row(
+            justify="around",
             children=[
                 dbc.Col(
                     md=12,
-                    lg=7,
-                    width={"offset": 1},
+                    lg=5,
+                    align="start",
                     style={"margin-bottom": 15},
                     children=html.Div(
                         children=[
@@ -55,9 +52,16 @@ def render_dashboard_status(world_view):
                             dcc.Markdown(
                                 style={"padding-left": 10},
                                 children=[
-                                    "Interactive visualisation of music streaming around the world.  \n"
+                                    "An interactive visualisation of music streaming around the world.  \n"
                                     "Made using [Dash](https://plotly.com/dash/) "
                                     "with data from [Spotify](https://spotifycharts.com/regional)."
+                                    "\n\n"
+                                    f"This report was generated using data for the weekly **top 100** streamed tracks "
+                                    f"in each country for each of the last **{weeks}** weeks."
+                                    f"\n\n"
+                                    f"You can view the code on "
+                                    f"[Github](https://github.com/domvwt/spotify-soundboard/tree/master) "
+                                    f"or contact me by [email](mailto:dominic.thorn@gmail.com) for more information!"
                                 ],
                             ),
                         ]
@@ -65,13 +69,14 @@ def render_dashboard_status(world_view):
                 ),
                 dbc.Col(
                     md=12,
-                    lg=4,
-                    # align="end",
+                    lg=3,
+                    align="center",
                     children=html.Div(
-                        style={"padding-top": 30}, children=[*stats_object]
+                        style={"padding-top": 30, "padding-left": 10},
+                        children=stats_object,
                     ),
                 ),
-            ]
+            ],
         )
     ]
 

@@ -56,7 +56,8 @@ app.layout = html.Div(
                         "LinkedIn", href="https://www.linkedin.com/in/dominic-thorn/"
                     ),
                     dbc.DropdownMenuItem(
-                        "Github", href="https://github.com/domvwt/spotify-soundboard"
+                        "Github",
+                        href="https://github.com/domvwt/spotify-soundboard/tree/master",
                     ),
                 ],
             ),
