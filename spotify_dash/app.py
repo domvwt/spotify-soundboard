@@ -8,10 +8,7 @@ import processes.charts as charts
 import processes.content as cnt
 import processes.views as views
 
-# TODO: Board status - coverage stats: date range, countries, artists, streams; top global genre, artist; last updated
 # TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
-# TODO: Global settings at top of page - date range
-# TODO: Refactor content to functions and modules for each view
 # TODO: TSNE Viz - 2d / 3d - Colour by continent - Space Exploration
 # TODO: Artist Trends
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
