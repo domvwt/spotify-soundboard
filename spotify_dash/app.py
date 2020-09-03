@@ -43,7 +43,7 @@ app.layout = html.Div(
     style={"padding-bottom": "2rem"},
     children=[
         dbc.NavbarSimple(
-            brand="SpotifySoundboard",
+            brand="clefbeam",
             color="dark",
             dark=True,
             brand_style={"font-weight": "bold", "color": "white"},

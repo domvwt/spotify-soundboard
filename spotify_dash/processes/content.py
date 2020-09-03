@@ -50,7 +50,7 @@ def render_dashboard_status(world_view):
                     md=12,
                     lg=7,
                     style={"margin-bottom": 15},
-                    children=html.Div(html.H1("Date Options")),
+                    children=html.Div(children=[html.H1("Spotify Soundboard"),]),
                 ),
                 dbc.Col(
                     md=12,
@@ -68,15 +68,15 @@ def render_dashboard_status(world_view):
 
 def render_world_map(choropleth_view):
     scope_options = [
-        {"label": "World", "value": "world"},
         {"label": "Europe", "value": "europe"},
         {"label": "North America", "value": "north america"},
         {"label": "South America", "value": "south america"},
         {"label": "Asia", "value": "asia"},
         {"label": "Africa", "value": "africa"},
+        {"label": "World", "value": "world"},
     ]
     return [
-        html.H1("Global View"),
+        html.H1("World View"),
         dbc.Row(
             dbc.Col(
                 md=12,
