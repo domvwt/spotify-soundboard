@@ -13,9 +13,7 @@ DARK_GREY = "rgb(8, 8, 8)"
 DEEP_TEAL = "rgb(7, 54, 66)"
 
 
-# TODO: Sparklines
 # TODO: Daterange in header
-# TODO: Top artists and top genres alongside the stream atlas
 
 
 def render_dashboard_status(world_view):
@@ -49,16 +47,28 @@ def render_dashboard_status(world_view):
                 dbc.Col(
                     md=12,
                     lg=7,
+                    width={"offset": 1},
                     style={"margin-bottom": 15},
-                    children=html.Div(children=[html.H1("Spotify Soundboard"),]),
+                    children=html.Div(
+                        children=[
+                            html.H1("Spotify Soundboard"),
+                            dcc.Markdown(
+                                style={"padding-left": 10},
+                                children=[
+                                    "Interactive visualisation of music streaming around the world.  \n"
+                                    "Made using [Dash](https://plotly.com/dash/) "
+                                    "with data from [Spotify](https://spotifycharts.com/regional)."
+                                ],
+                            ),
+                        ]
+                    ),
                 ),
                 dbc.Col(
                     md=12,
-                    lg=5,
-                    align="end",
-                    # style={"padding-right": 0,},
+                    lg=4,
+                    # align="end",
                     children=html.Div(
-                        style={"padding-top": 50}, children=[html.Br(), *stats_object]
+                        style={"padding-top": 30}, children=[*stats_object]
                     ),
                 ),
             ]
