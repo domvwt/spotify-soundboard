@@ -10,6 +10,60 @@ from processes import charts as charts, views as views
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
 DARK_GREY = "rgb(8, 8, 8)"
+DEEP_TEAL = "rgb(7, 54, 66)"
+
+
+# TODO: Sparklines
+# TODO: Daterange in header
+# TODO: Top artists and top genres alongside the stream atlas
+
+
+def render_dashboard_status(world_view):
+    world_view = world_view.copy().reset_index()
+
+    streams = world_view.loc[:, "Streams"].sum()
+    artists = world_view.loc[:, "Artist"].nunique()
+    genres = world_view.loc[:, "Genre"].nunique()
+    countries = world_view.loc[:, "Country"].nunique()
+
+    dash_stats = [
+        {"name": "Streams", "value": f"{streams:,d}"},
+        {"name": "Artists", "value": f"{artists:,d}"},
+        {"name": "Genres", "value": f"{genres:,d}"},
+        {"name": "Countries", "value": f"{countries:,d}"},
+    ]
+
+    def make_stats_items(header, body):
+        return html.Div(
+            children=[
+                html.H4(header, style={"padding-left": 5}),
+                html.H5(body, style={"margin-bottom": 20, "padding-left": 5}),
+            ]
+        )
+
+    stats_object = [make_stats_items(d["name"], d["value"]) for d in dash_stats]
+
+    return [
+        dbc.Row(
+            children=[
+                dbc.Col(
+                    md=12,
+                    lg=7,
+                    style={"margin-bottom": 15},
+                    children=html.Div(html.H1("Date Options")),
+                ),
+                dbc.Col(
+                    md=12,
+                    lg=5,
+                    align="end",
+                    # style={"padding-right": 0,},
+                    children=html.Div(
+                        style={"padding-top": 50}, children=[html.Br(), *stats_object]
+                    ),
+                ),
+            ]
+        )
+    ]
 
 
 def render_world_map(choropleth_view):
@@ -42,7 +96,7 @@ def render_world_map(choropleth_view):
                     children=[
                         dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
                         dbc.CardBody(
-                            dbc.Jumbotron(
+                            html.Div(
                                 children=dcc.Graph(
                                     id="world-choropleth",
                                     figure=charts.world_choropleth(

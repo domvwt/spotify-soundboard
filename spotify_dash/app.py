@@ -71,6 +71,8 @@ app.layout = html.Div(
             },
             children=[
                 html.Br(),
+                *cnt.render_dashboard_status(cached_world_view()),
+                html.Br(),
                 *cnt.render_world_map(cached_world_view()),
                 html.Br(),
                 *cnt.render_country_profile(
