@@ -43,10 +43,17 @@ def load_country_info() -> pd.DataFrame:
 
 
 def build_spotify_asset(start_date=None, top_tracks=100):
-    if start_date is None:
-        start_date = datetime.datetime.now() - datetime.timedelta(weeks=53)
 
     weekly_data = os.listdir(STREAM_DATA_DIR)
+    most_recent = max([file[-14:-4] for file in weekly_data])
+
+    if start_date is None:
+        start_date = datetime.datetime.strptime(
+            most_recent, "%Y-%m-%d"
+        ) - datetime.timedelta(weeks=51)
+
+    print("Start date:", start_date)
+
     spotify_weekly_paths = [
         os.path.join(STREAM_DATA_DIR, file)
         for file in weekly_data
