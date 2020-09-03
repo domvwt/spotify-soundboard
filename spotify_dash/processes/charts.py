@@ -1,41 +1,51 @@
-import plotly.express as px
 import numpy as np
 import pandas as pd
+import plotly.express as px
 
-QUAL_COLS = px.colors.qualitative.Bold
-SILVER = "rgb(131, 148, 150)"
+from processes.content import DEEP_TEAL, SILVER
 
-
-def no_bg(func):
-    def wrapper(*args, **kwargs):
-        fig = func(*args, **kwargs)
-        fig.update_layout(
-            {
-                "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                "paper_bgcolor": "rgba(0, 0, 0, 0)",
-                "font_color": SILVER,
-            }
-        )
-        fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
-        return fig
-
-    return wrapper
+SEQ_COLS = px.colors.sequential.Agsunset
 
 
-@no_bg
+def bg(plot_bg_colour=None, plot_paper_colour=None):
+    plot_bg_colour = "rgba(0, 0, 0, 0)" if plot_bg_colour is None else plot_bg_colour
+    plot_paper_colour = (
+        "rgba(0, 0, 0, 0)" if plot_paper_colour is None else plot_paper_colour
+    )
+
+    def bg_helper(func):
+        def wrapper(*args, **kwargs):
+            fig = func(*args, **kwargs)
+            fig.update_layout(
+                {
+                    "plot_bgcolor": plot_bg_colour,
+                    "paper_bgcolor": plot_paper_colour,
+                    "font_color": SILVER,
+                }
+            )
+            fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
+            return fig
+
+        return wrapper
+
+    return bg_helper
+
+
+@bg()
 def country_sunburst(chart_data):
     fig = px.sunburst(
         data_frame=chart_data,
         path=["Country", "Genre", "Artist"],
         values="Streams",
-        color_discrete_sequence=QUAL_COLS,
+        color_discrete_sequence=SEQ_COLS,
     )
     return fig
 
 
-@no_bg
-def world_choropleth(chart_data: pd.DataFrame):
-    # TODO: select streams / streams per capita
+@bg(plot_paper_colour=DEEP_TEAL)
+def world_choropleth(chart_data: pd.DataFrame, scope=None):
+    if scope is None:
+        scope = "world"
     chart_data.loc[:, "Streams (log10)"] = np.log(chart_data["Streams"])
     fig = px.choropleth(
         data_frame=chart_data,
@@ -50,8 +60,9 @@ def world_choropleth(chart_data: pd.DataFrame):
             "Top Genre": True,
         },
         locationmode="ISO-3",
-        color_continuous_scale=px.colors.sequential.Agsunset,
+        color_continuous_scale=SEQ_COLS,
         projection="miller",
+        scope=scope,
     )
     fig.update_geos(
         visible=False,
@@ -60,7 +71,7 @@ def world_choropleth(chart_data: pd.DataFrame):
         showcountries=False,
         showland=True,
         landcolor=SILVER,
-        lataxis={"range": [-40, 90]},
+        lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
