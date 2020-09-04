@@ -73,8 +73,23 @@ def world_choropleth(chart_data: pd.DataFrame, scope=None):
         landcolor=SILVER,
         lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
-    fig.update_layout(
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
-        coloraxis_colorbar={"tickprefix": "10e"},
+    fig.update_layout(coloraxis_colorbar={"tickprefix": "10e"},)
+    return fig
+
+
+@bg()
+def artist_trends(chart_data, log=False):
+    # TODO: Capitalise "date" in axis label
+    fig = px.line(
+        data_frame=chart_data,
+        x="date",
+        y="Streams",
+        color="Artist",
+        # color_discrete_sequence=SEQ_COLS,
     )
+    fig.update_xaxes(showgrid=False)
+
+    if log:
+        fig.update_layout(yaxis_type="log")
+
     return fig
