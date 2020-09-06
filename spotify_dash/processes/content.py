@@ -193,13 +193,13 @@ def render_country_profile(world_view, country_view):
                     lg=6,
                     children=[
                         dbc.Card(
-                            style={"margin-bottom": 15},
+                            # style={"margin-bottom": 15},
                             children=[
                                 dbc.CardHeader(
                                     html.H3("Top Artists", className="card-title")
                                 ),
                                 dbc.CardBody(
-                                    style={"padding-left": 40, "padding-right": 40,},
+                                    style={"padding-left": 40, "padding-right": 40, },
                                     children=[
                                         html.Br(),
                                         ddt.DataTable(
@@ -234,8 +234,7 @@ def render_country_profile(world_view, country_view):
 
 def render_artists_trends(artist_view):
     return [
-        html.Br(),
-        dbc.Row(dbc.Col(html.H1("Artist Trends"))),
+        dbc.Row(dbc.Col(html.H1("Top Artist Trends"))),
         dbc.Row(
             dbc.Col(
                 dbc.Card(
@@ -248,7 +247,8 @@ def render_artists_trends(artist_view):
                                 dbc.Row(
                                     children=[
                                         dbc.Col(
-                                            width=2,
+                                            width=6,
+                                            md=3,
                                             children=[
                                                 dbc.FormGroup(
                                                     style={"padding-left": 35},
@@ -274,7 +274,8 @@ def render_artists_trends(artist_view):
                                             ],
                                         ),
                                         dbc.Col(
-                                            width=2,
+                                            width=6,
+                                            md=3,
                                             children=dbc.FormGroup(
                                                 style={"padding-left": 0},
                                                 children=[
@@ -287,7 +288,7 @@ def render_artists_trends(artist_view):
                                                                 "value": "log-y",
                                                             },
                                                             {
-                                                                "label": "Rolling Avg.",
+                                                                "label": "Rolling 4wk Avg.",
                                                                 "value": "rolling-avg",
                                                             },
                                                         ],

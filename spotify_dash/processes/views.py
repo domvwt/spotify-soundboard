@@ -90,7 +90,9 @@ def choropleth_view(world_view_df):
     return result
 
 
-def artist_view(world_view_df, countries=None, artists=None):
+def artist_view(
+    world_view_df, countries=None, artists=None, cumulative=False, rolling_avg=False
+) -> pd.DataFrame:
     data = world_view_df.copy().reset_index()
 
     if countries:
@@ -112,6 +114,28 @@ def artist_view(world_view_df, countries=None, artists=None):
         .sum()
         .reset_index()
     )
+
+    if cumulative:
+        artist_view_df = (
+            artist_view_df.groupby(["date", "Artist"])
+            .sum()
+            .unstack()
+            .expanding()
+            .sum()
+            .stack()
+            .reset_index()
+        )
+
+    if rolling_avg:
+        artist_view_df = (
+            artist_view_df.groupby(["date", "Artist"])
+            .sum()
+            .unstack()
+            .rolling(4)
+            .mean()
+            .stack()
+            .reset_index()
+        )
 
     return artist_view_df
 
