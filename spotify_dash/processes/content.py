@@ -313,3 +313,74 @@ def render_artists_trends(artist_view):
             )
         ),
     ]
+
+
+def render_genre_space(world_view):
+    return [
+        dbc.Jumbotron(
+            children=[
+                html.H1("Genre Affinity Clustering"),
+                html.P(style={"padding-left": 20}, children="LOREM IPSUM"),
+                html.Br(),
+                html.Div(
+                    dbc.Row(
+                        style={"padding-left": 20},
+                        children=[
+                            dbc.Col(
+                                width=12,
+                                lg=3,
+                                children=dbc.FormGroup(
+                                    children=[
+                                        dbc.Label("3D"),
+                                        dbc.Checklist(
+                                            style={
+                                                "padding-left": 20,
+                                                "padding-bottom": 5,
+                                            },
+                                            id="tsne-dimension",
+                                            options=[dict(label="", value=True)],
+                                            value=False,
+                                            switch=True,
+                                        ),
+                                        dbc.Label("Principal Components"),
+                                        dcc.Slider(
+                                            id="tsne-pca",
+                                            min=10,
+                                            max=30,
+                                            step=1,
+                                            value=14,
+                                            marks={x: str(x) for x in range(10, 31, 4)},
+                                        ),
+                                        dbc.Label("Perplexity"),
+                                        dcc.Slider(
+                                            id="tsne-perplexity",
+                                            min=2,
+                                            max=20,
+                                            step=1,
+                                            value=5,
+                                            marks={x: str(x) for x in range(2, 21, 3)},
+                                        ),
+                                        html.Br(),
+                                        dbc.Button(
+                                            id="tsne-regenerate", children="Regenerate"
+                                        ),
+                                    ]
+                                ),
+                            ),
+                            dbc.Col(
+                                width=12,
+                                lg=9,
+                                children=dcc.Graph(
+                                    id="country-clustering",
+                                    figure=charts.country_tsne_clustering(
+                                        chart_data=views.tsne_genre_view(world_view),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ),
+                        ],
+                    )
+                ),
+            ]
+        )
+    ]

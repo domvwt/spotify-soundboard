@@ -1,4 +1,6 @@
 import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 import processes.etl as etl
 
@@ -140,6 +142,36 @@ def artist_view(
     return artist_view_df
 
 
+
+
+def tsne_genre_view(
+    world_view_df, principal_components=14, perplexity=5, learning_rate=10, dims3d=False
+):
+    genre_df = (
+        world_view_df.groupby(["Country", "Continent", "ISO2", "Genre"])["Streams"]
+        .sum()
+        .unstack()
+        .fillna(0)
+    )
+    genre_df = genre_df.divide(genre_df.sum(axis=1), axis=0)
+
+    dims = 3 if dims3d else 2
+
+    pca = PCA(n_components=principal_components)
+    genre_pca = pca.fit_transform(genre_df)
+
+    tsne = TSNE(
+        n_components=dims,
+        perplexity=perplexity,
+        learning_rate=learning_rate,
+        method="exact",
+    )
+    genre_tsne = tsne.fit_transform(genre_pca)
+    genre_tsne_df = pd.DataFrame(genre_tsne, index=genre_df.index).reset_index()
+
+    return genre_tsne_df
+
+
 if __name__ == "__main__":
-    df = artist_view(world_view(), countries=["Argentina"])
+    df = tsne_genre_view(world_view())
     print("Done.")
