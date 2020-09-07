@@ -83,44 +83,64 @@ def render_dashboard_status(world_view):
 
 def render_world_map(choropleth_view):
     scope_options = [
+        {"label": "World", "value": "world"},
         {"label": "Europe", "value": "europe"},
         {"label": "North America", "value": "north america"},
         {"label": "South America", "value": "south america"},
         {"label": "Asia", "value": "asia"},
         {"label": "Africa", "value": "africa"},
-        {"label": "World", "value": "world"},
     ]
     return [
         html.H1("World View"),
         dbc.Row(
-            dbc.Col(
-                md=12,
-                style={"padding-top": 10},
-                children=dcc.Dropdown(
-                    id="choropleth-input",
-                    options=scope_options,
-                    placeholder="Select a region...",
-                ),
-            )
-        ),
-        html.Br(),
-        dbc.Row(
             children=dbc.Col(
                 width=12,
-                children=dbc.Card(
+                children=html.Div(
                     children=[
-                        dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
-                        dbc.CardBody(
-                            html.Div(
-                                children=dcc.Graph(
-                                    id="world-choropleth",
-                                    figure=charts.world_choropleth(
-                                        views.choropleth_view(choropleth_view),
-                                        scope=None,
-                                    ),
-                                    config={"displayModeBar": False},
+                        # dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
+                        html.Div(
+                            children=[
+                                dbc.Row(
+                                    children=[
+                                        dbc.Col(
+                                            width=12,
+                                            lg=9,
+                                            children=dcc.Graph(
+                                                id="world-choropleth",
+                                                figure=charts.world_choropleth(
+                                                    views.choropleth_view(
+                                                        choropleth_view
+                                                    ),
+                                                    scope=None,
+                                                ),
+                                                config={"displayModeBar": False},
+                                            ),
+                                        ),
+                                        dbc.Col(
+                                            width=12,
+                                            lg=3,
+                                            children=html.Div(
+                                                style={"background-color": SLATE},
+                                                children=[
+                                                    dbc.CardBody(
+                                                        style={"font-size": 14},
+                                                        children=dbc.FormGroup(
+                                                            children=[
+                                                                dbc.Label("Region"),
+                                                                dbc.RadioItems(
+                                                                    id="choropleth-input",
+                                                                    options=scope_options,
+                                                                    value="world",
+                                                                ),
+                                                            ]
+                                                        ),
+                                                    )
+                                                ],
+                                            ),
+                                        ),
+                                    ],
                                 )
-                            )
+                            ]
                         ),
                     ]
                 ),
@@ -131,18 +151,17 @@ def render_world_map(choropleth_view):
 
 def render_country_profile(world_view, country_view):
     country_table_col_dict = [
-        {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
-    ] + [
-        {
-            "name": "Streams",
-            "id": "Streams",
-            "type": "numeric",
-            "format": Format(group=","),
-        }
-    ]
+                                 {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
+                             ] + [
+                                 {
+                                     "name": "Streams",
+                                     "id": "Streams",
+                                     "type": "numeric",
+                                     "format": Format(group=","),
+                                 }
+                             ]
 
     return [
-        html.Br(),
         dbc.Row(dbc.Col(html.H1("Country Profile"))),
         dbc.Row(
             children=[
