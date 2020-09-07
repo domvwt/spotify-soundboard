@@ -68,6 +68,7 @@ app.layout = html.Div(
                 "margin-right": "auto",
             },
             children=[
+                *cnt.render_artists_trends(views.artist_view(cached_world_view())),
                 html.Br(),
                 *cnt.render_dashboard_status(cached_world_view()),
                 html.Br(),

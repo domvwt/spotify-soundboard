@@ -50,7 +50,7 @@ def render_dashboard_status(world_view):
                         children=[
                             html.H1("Spotify Soundboard"),
                             dcc.Markdown(
-                                style={"padding-left": 10},
+                                style={"padding-left": 8},
                                 children=[
                                     "An interactive visualisation of music streaming around the world.  \n"
                                     "Made using [Dash](https://plotly.com/dash/) "
@@ -59,9 +59,9 @@ def render_dashboard_status(world_view):
                                     f"This report was generated using data for the weekly **top 100** streamed tracks "
                                     f"in each country for each of the last **{weeks}** weeks."
                                     f"\n\n"
-                                    f"You can view the code on "
+                                    f"Please view the code on "
                                     f"[Github](https://github.com/domvwt/spotify-soundboard/tree/master) "
-                                    f"or contact me by [email](mailto:dominic.thorn@gmail.com) for more information!"
+                                    f"or send an [email](mailto:dominic.thorn@gmail.com) for more information!"
                                 ],
                             ),
                         ]
@@ -69,10 +69,10 @@ def render_dashboard_status(world_view):
                 ),
                 dbc.Col(
                     md=12,
-                    lg=3,
+                    lg=5,
                     align="center",
                     children=html.Div(
-                        style={"padding-top": 30, "padding-left": 10},
+                        style={"padding-top": 30, "padding-left": 8},
                         children=stats_object,
                     ),
                 ),
@@ -193,13 +193,13 @@ def render_country_profile(world_view, country_view):
                     lg=6,
                     children=[
                         dbc.Card(
-                            style={"margin-bottom": 15},
+                            # style={"margin-bottom": 15},
                             children=[
                                 dbc.CardHeader(
                                     html.H3("Top Artists", className="card-title")
                                 ),
                                 dbc.CardBody(
-                                    style={"padding-left": 40, "padding-right": 40,},
+                                    style={"padding-left": 40, "padding-right": 40, },
                                     children=[
                                         html.Br(),
                                         ddt.DataTable(
@@ -228,5 +228,88 @@ def render_country_profile(world_view, country_view):
                     ],
                 ),
             ]
+        ),
+    ]
+
+
+def render_artists_trends(artist_view):
+    return [
+        dbc.Row(dbc.Col(html.H1("Top Artist Trends"))),
+        dbc.Row(
+            dbc.Col(
+                dbc.Card(
+                    children=[
+                        dbc.CardHeader(
+                            html.H3("Weekly Streams", className="card-title")
+                        ),
+                        dbc.CardBody(
+                            children=[
+                                dbc.Row(
+                                    children=[
+                                        dbc.Col(
+                                            width=6,
+                                            md=3,
+                                            children=[
+                                                dbc.FormGroup(
+                                                    style={"padding-left": 35},
+                                                    children=[
+                                                        # dbc.Label("Date Options"),
+                                                        dbc.RadioItems(
+                                                            id="artist-trends-date-options",
+                                                            options=[
+                                                                {
+                                                                    "label": "Snapshot",
+                                                                    "value": "snapshot",
+                                                                },
+                                                                {
+                                                                    "label": "Cumulative",
+                                                                    "value": "cumulative",
+                                                                },
+                                                            ],
+                                                            value="snapshot",
+                                                            # inline=True,
+                                                        ),
+                                                    ],
+                                                )
+                                            ],
+                                        ),
+                                        dbc.Col(
+                                            width=6,
+                                            md=3,
+                                            children=dbc.FormGroup(
+                                                style={"padding-left": 0},
+                                                children=[
+                                                    # dbc.Label("Display Options"),
+                                                    dbc.Checklist(
+                                                        id="artist-trends-axis-options",
+                                                        options=[
+                                                            {
+                                                                "label": "Log y Axis",
+                                                                "value": "log-y",
+                                                            },
+                                                            {
+                                                                "label": "Rolling 4wk Avg.",
+                                                                "value": "rolling-avg",
+                                                            },
+                                                        ],
+                                                        value=[],
+                                                        switch=True,
+                                                        # inline=True,
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                                dcc.Graph(
+                                    id="artist-trends",
+                                    figure=charts.artist_trends(artist_view),
+                                    config={"displayModeBar": False},
+                                ),
+                            ]
+                        ),
+                    ]
+                )
+            )
         ),
     ]

@@ -88,3 +88,58 @@ def choropleth_view(world_view_df):
     result = result.rename(columns={"Artist": "Top Artist", "Genre": "Top Genre"})
 
     return result
+
+
+def artist_view(
+    world_view_df, countries=None, artists=None, cumulative=False, rolling_avg=False
+) -> pd.DataFrame:
+    data = world_view_df.copy().reset_index()
+
+    if countries:
+        data = data.loc[data.loc[:, "Country"].isin(countries), :]
+
+    # Get top 10 artists
+    if artists is None:
+        artists = (
+            data.groupby("Artist", group_keys=False)["Streams"]
+            .sum()
+            .reset_index()
+            .sort_values(by="Streams", ascending=False)[:10]
+            .Artist.values
+        )
+
+    artist_view_df = (
+        data.loc[data.loc[:, "Artist"].isin(artists), :]
+        .groupby(["date", "Artist"])["Streams"]
+        .sum()
+        .reset_index()
+    )
+
+    if cumulative:
+        artist_view_df = (
+            artist_view_df.groupby(["date", "Artist"])
+            .sum()
+            .unstack()
+            .expanding()
+            .sum()
+            .stack()
+            .reset_index()
+        )
+
+    if rolling_avg:
+        artist_view_df = (
+            artist_view_df.groupby(["date", "Artist"])
+            .sum()
+            .unstack()
+            .rolling(4)
+            .mean()
+            .stack()
+            .reset_index()
+        )
+
+    return artist_view_df
+
+
+if __name__ == "__main__":
+    df = artist_view(world_view(), countries=["Argentina"])
+    print("Done.")
