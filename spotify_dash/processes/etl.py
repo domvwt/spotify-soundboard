@@ -1,9 +1,12 @@
+import csv
 import datetime
 import itertools
 import os
 import pickle
 from collections import Counter
 from typing import Iterable
+
+from dataclasses import dataclass, astuple
 
 import pandas as pd
 from tqdm import tqdm
@@ -43,7 +46,6 @@ def load_country_info() -> pd.DataFrame:
 
 
 def build_spotify_asset(start_date=None, top_tracks=100):
-
     weekly_data = os.listdir(STREAM_DATA_DIR)
     most_recent = max([file[-14:-4] for file in weekly_data])
 
@@ -61,15 +63,55 @@ def build_spotify_asset(start_date=None, top_tracks=100):
     ]
 
     def concatenate_country_csvs(csv_list: Iterable[str]) -> pd.DataFrame:
-        df_dict = {
-            (os.path.split(file)[1][:2].upper(), file[-14:-4]): read_try_csv(file)[
-                :top_tracks
-            ]
-            for file in tqdm(csv_list)
-        }
-        return pd.concat(
-            df_dict, axis=0, keys=df_dict.keys(), names=("ISO2", "date", "orig")
-        ).droplevel(level="orig")
+        expected_columns = 'Position,"Track Name",Artist,Streams,URL'
+
+        @dataclass()
+        class TrackRecord:
+            position: int
+            track_name: str
+            artist: str
+            streams: int
+            url: str
+            date: datetime.datetime
+            country: str
+
+            def __post_init__(self):
+                self.position = int(self.position)
+                self.streams = int(self.streams)
+                self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d")
+
+        def process_csv(file_path):
+
+            date = file_path[-14:-4]
+            country = os.path.split(file_path)[1][:2].upper()
+            data = list()
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                next(f)  # Skip the first row
+                if expected_columns in f.readline():
+                    # data = f.readlines()
+                    for record in csv.reader(f):
+                        # record = next(csv.reader([line]))
+                        record += [date, country]
+                        record = TrackRecord(*record)
+                        data += [record]
+                else:
+                    print(f"Unexpected file format: {file_path}")
+
+            # data = list(map(lambda x: x.replace("\n", f",{date},{country}\n"), data))
+
+            return data
+
+        records = [process_csv(csv_path) for csv_path in tqdm(csv_list)]
+        records = list(itertools.chain.from_iterable(records))
+        # records = list(csv.reader(records))
+        # records = list(map(lambda x: TrackRecord(*x), records))
+
+        columns = expected_columns.split(",") + ["date", "ISO2"]
+
+        df = pd.DataFrame([astuple(x) for x in records], columns=columns)
+
+        return df
 
     if os.path.isfile(ARTIST_GENRE_MANY_MAP):
         print(f"Loaded artist -> all genre map from: {ARTIST_GENRE_MANY_MAP}")
@@ -96,8 +138,8 @@ def build_spotify_asset(start_date=None, top_tracks=100):
     # Check for new artists.
     new_artist_tracks = (
         spotify_df_01.loc[(spotify_df_01["Genre"].isna()) & (spotify_df_01["Artist"])]
-        .groupby("Artist")["URL"]
-        .first()
+            .groupby("Artist")["URL"]
+            .first()
     )
     # Add new artists to the artist -> genre map.
     if not new_artist_tracks.empty:
@@ -143,12 +185,3 @@ def build_spotify_asset(start_date=None, top_tracks=100):
 def load_spotify_asset(mode="local"):
     if mode == "local":
         return pd.read_pickle(SPOTIFY_ASSET_PATH)
-
-
-def read_try_csv(path):
-    try:
-        result = pd.read_csv(path, skiprows=1, encoding="utf-8")
-    except pd.errors.ParserError:
-        print(Exception(f"File is not a csv: {path}"))
-        result = pd.DataFrame()
-    return result
