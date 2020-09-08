@@ -1,5 +1,5 @@
 import csv
-import datetime
+import datetime as dt
 import itertools
 import os
 import pickle
@@ -49,9 +49,9 @@ def build_spotify_asset(start_date=None):
     most_recent = max([file[-14:-4] for file in weekly_data])
 
     if start_date is None:
-        start_date = datetime.datetime.strptime(
-            most_recent, "%Y-%m-%d"
-        ) - datetime.timedelta(weeks=51)
+        start_date = dt.datetime.strptime(most_recent, "%Y-%m-%d") - dt.timedelta(
+            weeks=51
+        )
 
     print("Start date:", start_date)
 
@@ -85,15 +85,16 @@ def build_spotify_asset(start_date=None):
 
         dtypes = {
             "Position": int,
-            "Track Name": str,
-            "Artist": str,
+            "Track Name": pd.CategoricalDtype(),
+            "Artist": pd.CategoricalDtype(),
             "Streams": int,
             "URL": str,
             "date": str,
-            "ISO2": str,
+            "ISO2": pd.CategoricalDtype(),
         }
 
         df = pd.DataFrame(data, columns=target_columns).astype(dtypes)
+        df.date = pd.to_datetime(df.date, format="%Y-%m-%d")
 
         return df
 
@@ -111,6 +112,7 @@ def build_spotify_asset(start_date=None):
     else:
         print(f"No map found at {ARTIST_GENRE_ONE_MAP}")
         artist_to_genre_one = dict()
+
     # Load raw data files.
     print("Concatenating files...")
     spotify_df_00 = concatenate_country_csvs(spotify_weekly_paths)
@@ -121,12 +123,16 @@ def build_spotify_asset(start_date=None):
 
     # Check for new artists.
     new_artist_tracks = (
-        spotify_df_01.loc[(spotify_df_01["Genre"].isna()) & (spotify_df_01["Artist"])]
+        spotify_df_01.loc[
+            ((spotify_df_01["Genre"].isna()) & (~spotify_df_01["Artist"].isna())), :
+        ]
         .groupby("Artist")["URL"]
         .first()
+        .dropna()
     )
     # Add new artists to the artist -> genre map.
-    if not new_artist_tracks.empty:
+    if new_artist_tracks.any():
+        print("Cataloguing new artists...")
         new_artist_track_ids = new_artist_tracks.apply(
             lambda x: x.split("/")[-1]
         ).to_list()
@@ -164,6 +170,7 @@ def build_spotify_asset(start_date=None):
         pickle.dump(artist_to_genre_one, f)
 
     spotify_df_01.to_pickle(SPOTIFY_ASSET_PATH)
+    print("Complete.")
 
 
 def load_spotify_asset(mode="local"):
