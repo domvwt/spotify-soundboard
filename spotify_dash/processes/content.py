@@ -212,7 +212,6 @@ def render_country_profile(world_view, country_view):
                     lg=6,
                     children=[
                         dbc.Card(
-                            # style={"margin-bottom": 15},
                             children=[
                                 dbc.CardHeader(
                                     html.H3("Top Artists", className="card-title")
@@ -272,7 +271,6 @@ def render_artists_trends(artist_view):
                                                 dbc.FormGroup(
                                                     style={"padding-left": 35},
                                                     children=[
-                                                        # dbc.Label("Date Options"),
                                                         dbc.RadioItems(
                                                             id="artist-trends-date-options",
                                                             options=[
@@ -285,8 +283,7 @@ def render_artists_trends(artist_view):
                                                                     "value": "cumulative",
                                                                 },
                                                             ],
-                                                            value="snapshot",
-                                                            # inline=True,
+                                                            value="snapshot"
                                                         ),
                                                     ],
                                                 )
@@ -298,7 +295,6 @@ def render_artists_trends(artist_view):
                                             children=dbc.FormGroup(
                                                 style={"padding-left": 0},
                                                 children=[
-                                                    # dbc.Label("Display Options"),
                                                     dbc.Checklist(
                                                         id="artist-trends-axis-options",
                                                         options=[
@@ -379,9 +375,13 @@ def render_genre_space(world_view):
                                             value=5,
                                             marks={x: str(x) for x in range(2, 21, 3)},
                                         ),
-                                        html.Br(),
                                         dbc.Button(
-                                            id="tsne-regenerate", children="Regenerate"
+                                            id="tsne-regenerate",
+                                            outline=True,
+                                            color="light",
+                                            size="sm",
+                                            style={"margin-left": 5, "margin-top": 10},
+                                            children="Regenerate"
                                         ),
                                     ]
                                 ),

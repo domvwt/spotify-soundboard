@@ -121,8 +121,8 @@ def country_tsne_clustering(chart_data, plot3d=False):
             hover_name="Country",
             color_discrete_sequence=SEQ_COLS,
         )
-        fig.update_xaxes(showgrid=False, zeroline=False)
-        fig.update_yaxes(showgrid=False, zeroline=False)
+        fig.update_xaxes(visible=False)
+        fig.update_yaxes(visible=False)
         fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=1), height=500)
 
     return fig

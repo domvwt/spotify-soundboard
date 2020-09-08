@@ -147,9 +147,10 @@ def update_artist_trends(date_option, axis_option):
         Input(component_id="tsne-dimension", component_property="value"),
         Input(component_id="tsne-pca", component_property="value"),
         Input(component_id="tsne-perplexity", component_property="value"),
+        Input(component_id="tsne-regenerate", component_property="n_clicks")
     ],
 )
-def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity):
+def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
     return charts.country_tsne_clustering(
         chart_data=views.tsne_genre_view(
             world_view_df=cached_world_view(),
