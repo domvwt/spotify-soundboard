@@ -8,11 +8,7 @@ import processes.charts as charts
 import processes.content as cnt
 import processes.views as views
 
-# TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
-# TODO: New style with colour gradient:
-#  style={'background': f'linear-gradient({DEEP_TEAL}, {DEEP_TEAL} 20%, {DARK_GREY})'},
-# TODO: Take everything OUT of card containers
 # TODO: Genre explorer in tree map - between country profile and artist trends
 
 app = dash.Dash(
@@ -64,31 +60,59 @@ app.layout = html.Div(
         # MAIN APP LAYOUT
         dbc.Container(
             style={
-                "padding-left": "auto",
+                "padding-left": "5%",
                 "margin-left": "auto",
-                "padding-right": "auto",
+                "padding-right": "5%",
                 "margin-right": "auto",
             },
+            fluid=True,
             children=[
                 html.Br(),
-                *cnt.render_dashboard_status(cached_world_view()),
                 html.Br(),
-                *cnt.render_world_map(cached_world_view()),
-                html.Br(),
-                *cnt.render_country_profile(
-                    cached_world_view(),
-                    cached_country_view(country_name="United Kingdom"),
+                dbc.Jumbotron(
+                    style={
+                        "background": "linear-gradient("
+                        "to right top, "
+                        "rgb(253, 159, 108), "
+                        "rgb(182, 54, 121) 30%, "
+                        "rgb(59, 15, 111)"
+                        ")",
+                        "color": "rgb(240, 240, 240)",
+                    },
+                    children=[*cnt.render_dashboard_status(cached_world_view()),],
                 ),
                 html.Br(),
-                *cnt.render_artists_trends(views.artist_view(cached_world_view())),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[*cnt.render_world_map(cached_world_view())],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[
+                        *cnt.render_country_profile(
+                            cached_world_view(),
+                            cached_country_view(country_name="United Kingdom"),
+                        )
+                    ],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[
+                        *cnt.render_artists_trends(
+                            views.artist_view(cached_world_view()), cached_world_view()
+                        )
+                    ],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[*cnt.render_genre_space(cached_world_view())],
+                ),
+                html.Br(),
             ],
         ),
-        html.Br(),
-        dbc.Row(
-            justify="center",
-            children=dbc.Col(width=10, *cnt.render_genre_space(cached_world_view()),),
-        ),
-        html.Br(),
     ],
 )
 
@@ -124,9 +148,10 @@ def update_country_table(input_value):
     [
         Input(component_id="artist-trends-date-options", component_property="value"),
         Input(component_id="artist-trends-axis-options", component_property="value"),
+        Input(component_id="artist-trends-selection", component_property="value"),
     ],
 )
-def update_artist_trends(date_option, axis_option):
+def update_artist_trends(date_option, axis_option, artists):
     log = True if "log-y" in axis_option else False
     rolling = True if "rolling-avg" in axis_option else False
 
@@ -134,7 +159,10 @@ def update_artist_trends(date_option, axis_option):
 
     return charts.artist_trends(
         chart_data=views.artist_view(
-            cached_world_view(), cumulative=cumulative, rolling_avg=rolling
+            cached_world_view(),
+            cumulative=cumulative,
+            rolling_avg=rolling,
+            artists=artists,
         ),
         log=log,
     )

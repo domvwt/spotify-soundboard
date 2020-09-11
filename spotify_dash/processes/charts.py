@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
-from processes.content import DEEP_TEAL, SILVER
+from processes.content import SILVER
 
 SEQ_COLS = px.colors.sequential.Agsunset
 
@@ -23,23 +24,12 @@ def bg(plot_bg_colour=None, plot_paper_colour=None):
                     "font_color": SILVER,
                 }
             )
-            fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
+            fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
             return fig
 
         return wrapper
 
     return bg_helper
-
-
-@bg()
-def country_sunburst(chart_data):
-    fig = px.sunburst(
-        data_frame=chart_data,
-        path=["Country", "Genre", "Artist"],
-        values="Streams",
-        color_discrete_sequence=SEQ_COLS,
-    )
-    return fig
 
 
 @bg()
@@ -73,24 +63,45 @@ def world_choropleth(chart_data: pd.DataFrame, scope=None):
         landcolor=SILVER,
         lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
-
-    fig.update_layout(coloraxis_colorbar=dict(tickprefix="10e"))
+    fig.update_layout(dict(coloraxis_colorbar=dict(tickprefix="10e")))
 
     return fig
 
 
 @bg()
-def artist_trends(chart_data, log=False):
-    # TODO: Capitalise "date" in axis label
-    fig = px.line(
+def country_sunburst(chart_data):
+    fig = px.sunburst(
         data_frame=chart_data,
-        x="date",
-        y="Streams",
-        labels={"date": "Date"},
-        color="Artist",
-        # color_discrete_sequence=SEQ_COLS,
+        path=["Country", "Genre", "Artist"],
+        values="Streams",
+        color_discrete_sequence=SEQ_COLS,
     )
-    fig.update_xaxes(showgrid=False)
+    return fig
+
+
+@bg()
+def artist_trends(chart_data, log=False):
+    if not chart_data.empty:
+        fig = px.line(
+            data_frame=chart_data,
+            x="date",
+            y="Streams",
+            labels={"date": "Date"},
+            color="Artist",
+            # color_discrete_sequence=SEQ_COLS,
+        )
+    else:
+        fig = go.Figure()
+
+    fig.update_xaxes(visible=True, showgrid=False)
+    fig.update_yaxes(
+        visible=True,
+        showgrid=True,
+        gridwidth=1,
+        gridcolor=SILVER,
+        zerolinewidth=1,
+        zerolinecolor=SILVER,
+    )
 
     if log:
         fig.update_layout(yaxis_type="log")
@@ -136,8 +147,20 @@ def country_tsne_clustering(chart_data, plot3d=False):
             hover_name="Country",
             color_discrete_sequence=SEQ_COLS,
         )
-        fig.update_xaxes(visible=False)
-        fig.update_yaxes(visible=False)
-        fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=1))
+        fig.update_xaxes(
+            visible=True,
+            showgrid=False,
+            zerolinewidth=1,
+            zerolinecolor=SILVER,
+            title_text="X",
+        )
+        fig.update_yaxes(
+            visible=True,
+            showgrid=False,
+            zerolinewidth=1,
+            zerolinecolor=SILVER,
+            title_text="Y",
+        )
+        fig.update_layout(dict(yaxis=dict(scaleanchor="x", scaleratio=1)))
 
     return fig

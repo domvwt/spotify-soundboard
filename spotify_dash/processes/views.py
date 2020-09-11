@@ -114,8 +114,8 @@ def artist_view(
             data.groupby("Artist", group_keys=False)["Streams"]
             .sum()
             .reset_index()
-            .sort_values(by="Streams", ascending=False)[:10]
-            .Artist.values
+            .sort_values(by="Streams", ascending=False)
+            .Artist.values[:10]
         )
 
     artist_view_df = (
