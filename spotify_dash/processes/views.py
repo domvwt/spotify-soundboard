@@ -1,4 +1,6 @@
 import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 import processes.etl as etl
 
@@ -11,10 +13,17 @@ def world_view() -> pd.DataFrame:
         .to_frame()
     )
     country_info_00 = etl.load_country_info()
-    world_view_df = spotify_df_01.join(country_info_00, how="inner")
-    world_view_df.loc[:, "Streams_per_capita"] = (
-        world_view_df.loc[:, "Streams"] / world_view_df.loc[:, "Population"]
+    country_info_00.loc[:, "Continent"] = country_info_00.loc[:, "Continent"].map(
+        {
+            "AF": "Africa",
+            "AS": "Asia",
+            "NA": "North America",
+            "OC": "Asia",
+            "EU": "Europe",
+            "SA": "South America",
+        }
     )
+    world_view_df = spotify_df_01.join(country_info_00, how="inner")
 
     # Drop incorrectly labelled Greenland streams...
     world_view_df = world_view_df[world_view_df["Country"] != "Greenland"]
@@ -22,7 +31,7 @@ def world_view() -> pd.DataFrame:
     return world_view_df
 
 
-def country_view(country_name, world_view_df=None):
+def country_view(country_name=None, world_view_df=None):
     country_name = "United Kingdom" if country_name is None else country_name
     country_view_df = world_view() if world_view_df is None else world_view_df
 
@@ -34,9 +43,10 @@ def country_view(country_name, world_view_df=None):
     )
 
     # Filter for Country
-    country_view_df = country_view_df.loc[
-        country_view_df.loc[:, "Country"] == country_name
-    ].reset_index()[:100]
+    if country_name:
+        country_view_df = country_view_df.loc[
+            country_view_df.loc[:, "Country"] == country_name
+        ].reset_index()[:100]
 
     # Sort records
     country_view_df = country_view_df.sort_values(by="Streams", ascending=False)
@@ -77,7 +87,7 @@ def choropleth_view(world_view_df):
 
     total_streams = (
         world_view_df.copy()
-        .groupby(["Country", "ISO3"])[["Streams", "Streams_per_capita"]]
+        .groupby(["Country", "ISO3"])[["Streams"]]
         .sum()
         .reset_index()
         .set_index("Country")
@@ -140,6 +150,35 @@ def artist_view(
     return artist_view_df
 
 
+def tsne_genre_view(
+    world_view_df, principal_components=14, perplexity=5, learning_rate=10, dims3d=False
+):
+    genre_df = (
+        world_view_df.groupby(["Country", "Continent", "ISO2", "Genre"])["Streams"]
+        .sum()
+        .unstack()
+        .fillna(0)
+    )
+    genre_df = genre_df.divide(genre_df.sum(axis=1), axis=0)
+
+    dims = 3 if dims3d else 2
+
+    pca = PCA(n_components=principal_components)
+    genre_pca = pca.fit_transform(genre_df)
+
+    tsne = TSNE(
+        n_components=dims,
+        perplexity=perplexity,
+        learning_rate=learning_rate,
+        method="exact",
+    )
+    genre_tsne = tsne.fit_transform(genre_pca)
+    genre_tsne_df = pd.DataFrame(genre_tsne, index=genre_df.index).reset_index()
+    genre_tsne_df = genre_tsne_df.sort_values(by="Continent")
+
+    return genre_tsne_df
+
+
 if __name__ == "__main__":
-    df = artist_view(world_view(), countries=["Argentina"])
+    df = tsne_genre_view(world_view())
     print("Done.")

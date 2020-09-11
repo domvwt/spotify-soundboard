@@ -83,44 +83,64 @@ def render_dashboard_status(world_view):
 
 def render_world_map(choropleth_view):
     scope_options = [
+        {"label": "World", "value": "world"},
         {"label": "Europe", "value": "europe"},
         {"label": "North America", "value": "north america"},
         {"label": "South America", "value": "south america"},
         {"label": "Asia", "value": "asia"},
         {"label": "Africa", "value": "africa"},
-        {"label": "World", "value": "world"},
     ]
     return [
         html.H1("World View"),
         dbc.Row(
-            dbc.Col(
-                md=12,
-                style={"padding-top": 10},
-                children=dcc.Dropdown(
-                    id="choropleth-input",
-                    options=scope_options,
-                    placeholder="Select a region...",
-                ),
-            )
-        ),
-        html.Br(),
-        dbc.Row(
             children=dbc.Col(
                 width=12,
-                children=dbc.Card(
+                children=html.Div(
                     children=[
-                        dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
-                        dbc.CardBody(
-                            html.Div(
-                                children=dcc.Graph(
-                                    id="world-choropleth",
-                                    figure=charts.world_choropleth(
-                                        views.choropleth_view(choropleth_view),
-                                        scope=None,
-                                    ),
-                                    config={"displayModeBar": False},
+                        # dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
+                        html.Div(
+                            children=[
+                                dbc.Row(
+                                    children=[
+                                        dbc.Col(
+                                            width=12,
+                                            lg=9,
+                                            children=dcc.Graph(
+                                                id="world-choropleth",
+                                                figure=charts.world_choropleth(
+                                                    views.choropleth_view(
+                                                        choropleth_view
+                                                    ),
+                                                    scope=None,
+                                                ),
+                                                config={"displayModeBar": False},
+                                            ),
+                                        ),
+                                        dbc.Col(
+                                            width=12,
+                                            lg=3,
+                                            children=html.Div(
+                                                style={"background-color": SLATE},
+                                                children=[
+                                                    dbc.CardBody(
+                                                        style={"font-size": 14},
+                                                        children=dbc.FormGroup(
+                                                            children=[
+                                                                dbc.Label("Region"),
+                                                                dbc.RadioItems(
+                                                                    id="choropleth-input",
+                                                                    options=scope_options,
+                                                                    value="world",
+                                                                ),
+                                                            ]
+                                                        ),
+                                                    )
+                                                ],
+                                            ),
+                                        ),
+                                    ],
                                 )
-                            )
+                            ]
                         ),
                     ]
                 ),
@@ -142,7 +162,6 @@ def render_country_profile(world_view, country_view):
     ]
 
     return [
-        html.Br(),
         dbc.Row(dbc.Col(html.H1("Country Profile"))),
         dbc.Row(
             children=[
@@ -193,13 +212,12 @@ def render_country_profile(world_view, country_view):
                     lg=6,
                     children=[
                         dbc.Card(
-                            # style={"margin-bottom": 15},
                             children=[
                                 dbc.CardHeader(
                                     html.H3("Top Artists", className="card-title")
                                 ),
                                 dbc.CardBody(
-                                    style={"padding-left": 40, "padding-right": 40, },
+                                    style={"padding-left": 40, "padding-right": 40},
                                     children=[
                                         html.Br(),
                                         ddt.DataTable(
@@ -232,6 +250,7 @@ def render_country_profile(world_view, country_view):
     ]
 
 
+# TODO: Add multiselector for countries
 def render_artists_trends(artist_view):
     return [
         dbc.Row(dbc.Col(html.H1("Top Artist Trends"))),
@@ -253,7 +272,6 @@ def render_artists_trends(artist_view):
                                                 dbc.FormGroup(
                                                     style={"padding-left": 35},
                                                     children=[
-                                                        # dbc.Label("Date Options"),
                                                         dbc.RadioItems(
                                                             id="artist-trends-date-options",
                                                             options=[
@@ -267,7 +285,6 @@ def render_artists_trends(artist_view):
                                                                 },
                                                             ],
                                                             value="snapshot",
-                                                            # inline=True,
                                                         ),
                                                     ],
                                                 )
@@ -279,7 +296,6 @@ def render_artists_trends(artist_view):
                                             children=dbc.FormGroup(
                                                 style={"padding-left": 0},
                                                 children=[
-                                                    # dbc.Label("Display Options"),
                                                     dbc.Checklist(
                                                         id="artist-trends-axis-options",
                                                         options=[
@@ -294,7 +310,6 @@ def render_artists_trends(artist_view):
                                                         ],
                                                         value=[],
                                                         switch=True,
-                                                        # inline=True,
                                                     ),
                                                 ],
                                             ),
@@ -312,4 +327,93 @@ def render_artists_trends(artist_view):
                 )
             )
         ),
+    ]
+
+
+def render_genre_space(world_view):
+    return [
+        dbc.Jumbotron(
+            children=[
+                html.Div(
+                    dbc.Row(
+                        style={"padding-left": 20},
+                        children=[
+                            dbc.Col(
+                                width=12,
+                                lg=3,
+                                children=[
+                                    html.H2("Genre Affinity Clustering"),
+                                    html.P(
+                                        style={"padding-left": 20},
+                                        children="LOREM IPSUM",
+                                    ),
+                                    html.Br(),
+                                    dbc.FormGroup(
+                                        children=[
+                                            dbc.Label("3D"),
+                                            dbc.Checklist(
+                                                style={
+                                                    "padding-left": 20,
+                                                    "padding-bottom": 5,
+                                                },
+                                                id="tsne-dimension",
+                                                options=[dict(label="", value=True)],
+                                                value=False,
+                                                switch=True,
+                                            ),
+                                            dbc.Label("Principal Components"),
+                                            dcc.Slider(
+                                                id="tsne-pca",
+                                                min=10,
+                                                max=30,
+                                                step=1,
+                                                value=14,
+                                                marks={
+                                                    x: str(x) for x in range(10, 31, 4)
+                                                },
+                                            ),
+                                            dbc.Label("Perplexity"),
+                                            dcc.Slider(
+                                                id="tsne-perplexity",
+                                                min=2,
+                                                max=20,
+                                                step=1,
+                                                value=5,
+                                                marks={
+                                                    x: str(x) for x in range(2, 21, 3)
+                                                },
+                                            ),
+                                            dbc.Label("Regenerate Clusters"),
+                                            html.Br(),
+                                            dbc.Button(
+                                                id="tsne-regenerate",
+                                                outline=True,
+                                                color="light",
+                                                size="sm",
+                                                style={
+                                                    "margin-left": 20,
+                                                    "margin-top": 3,
+                                                },
+                                                children="Regenerate",
+                                            ),
+                                        ]
+                                    ),
+                                ],
+                            ),
+                            dbc.Col(
+                                width=12,
+                                lg=9,
+                                children=dcc.Graph(
+                                    id="country-clustering",
+                                    figure=charts.country_tsne_clustering(
+                                        chart_data=views.tsne_genre_view(world_view),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ),
+                        ],
+                    )
+                ),
+            ]
+        )
     ]

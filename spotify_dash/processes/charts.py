@@ -42,7 +42,7 @@ def country_sunburst(chart_data):
     return fig
 
 
-@bg(plot_paper_colour=DEEP_TEAL)
+@bg()
 def world_choropleth(chart_data: pd.DataFrame, scope=None):
     if scope is None:
         scope = "world"
@@ -73,7 +73,9 @@ def world_choropleth(chart_data: pd.DataFrame, scope=None):
         landcolor=SILVER,
         lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
-    fig.update_layout(coloraxis_colorbar={"tickprefix": "10e"},)
+
+    fig.update_layout(coloraxis_colorbar=dict(tickprefix="10e"))
+
     return fig
 
 
@@ -84,6 +86,7 @@ def artist_trends(chart_data, log=False):
         data_frame=chart_data,
         x="date",
         y="Streams",
+        labels={"date": "Date"},
         color="Artist",
         # color_discrete_sequence=SEQ_COLS,
     )
@@ -91,5 +94,50 @@ def artist_trends(chart_data, log=False):
 
     if log:
         fig.update_layout(yaxis_type="log")
+
+    return fig
+
+
+@bg()
+def country_tsne_clustering(chart_data, plot3d=False):
+    if plot3d:
+        fig = px.scatter_3d(
+            data_frame=chart_data,
+            x=0,
+            y=1,
+            z=2,
+            color="Continent",
+            hover_name="Country",
+            color_discrete_sequence=SEQ_COLS,
+        )
+        fig.update_layout(scene_aspectmode="cube")
+        fig.update_layout(
+            scene=dict(
+                xaxis_title="X",
+                yaxis_title="Y",
+                zaxis_title="Z",
+                xaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER,
+                ),
+                yaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER
+                ),
+                zaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER,
+                ),
+            ),
+        )
+    else:
+        fig = px.scatter(
+            data_frame=chart_data,
+            x=0,
+            y=1,
+            color="Continent",
+            hover_name="Country",
+            color_discrete_sequence=SEQ_COLS,
+        )
+        fig.update_xaxes(visible=False)
+        fig.update_yaxes(visible=False)
+        fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=1))
 
     return fig
