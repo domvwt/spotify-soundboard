@@ -103,8 +103,9 @@ def render_world_map(choropleth_view):
                                 dbc.Row(
                                     children=[
                                         dbc.Col(
-                                            width=12,
-                                            lg=9,
+                                            md={"size": 12, "order": "first"},
+                                            lg={"size": 9, "order": "last"},
+                                            xl={"size": 10, "order": "last"},
                                             children=dcc.Graph(
                                                 id="world-choropleth",
                                                 figure=charts.world_choropleth(
@@ -117,16 +118,17 @@ def render_world_map(choropleth_view):
                                             ),
                                         ),
                                         dbc.Col(
-                                            width=12,
-                                            lg=3,
+                                            md={"size": 12, "order": "last"},
+                                            lg={"size": 3, "order": "first"},
+                                            xl={"size": 2, "order": "first"},
                                             children=html.Div(
-                                                style={"background-color": SLATE},
+                                                # style={"background-color": SLATE},
                                                 children=[
                                                     dbc.CardBody(
                                                         style={"font-size": 14},
                                                         children=dbc.FormGroup(
                                                             children=[
-                                                                dbc.Label("Region"),
+                                                                dbc.Label("Scope"),
                                                                 dbc.RadioItems(
                                                                     id="choropleth-input",
                                                                     options=scope_options,
