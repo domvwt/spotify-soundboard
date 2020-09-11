@@ -9,7 +9,6 @@ import processes.content as cnt
 import processes.views as views
 
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
-# TODO: Genre explorer in tree map - between country profile and artist trends
 
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard"
@@ -79,12 +78,16 @@ app.layout = html.Div(
                         ")",
                         "color": "rgb(240, 240, 240)",
                     },
-                    children=[*cnt.render_dashboard_status(cached_world_view()),],
+                    children=[*cnt.render_dashboard_status(cached_world_view())],
                 ),
                 html.Br(),
                 dbc.Jumbotron(
                     style={"padding-left": 50, "padding-right": 50},
-                    children=[*cnt.render_world_map(cached_world_view())],
+                    children=[
+                        *cnt.render_world_map(
+                            views.choropleth_view(cached_world_view())
+                        )
+                    ],
                 ),
                 html.Br(),
                 dbc.Jumbotron(
@@ -110,7 +113,10 @@ app.layout = html.Div(
                     style={"padding-left": 50, "padding-right": 50},
                     children=[*cnt.render_genre_space(cached_world_view())],
                 ),
-                html.Br(),
+                html.Div(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[*cnt.render_genre_tree(cached_world_view(),)],
+                ),
             ],
         ),
     ],
@@ -168,6 +174,7 @@ def update_artist_trends(date_option, axis_option, artists):
     )
 
 
+# noinspection PyUnusedLocal
 @app.callback(
     Output(component_id="country-clustering", component_property="figure"),
     [

@@ -69,6 +69,19 @@ def world_choropleth(chart_data: pd.DataFrame, scope=None):
 
 
 @bg()
+def genre_tree(chart_data):
+    chart_data = chart_data.loc[chart_data.Streams >= 1e7, :]
+    chart_data = chart_data.reset_index()
+    fig = px.treemap(
+        data_frame=chart_data,
+        path=["Genre", "Artist"],
+        values="Streams",
+        color_discrete_sequence=SEQ_COLS,
+    )
+    return fig
+
+
+@bg()
 def country_sunburst(chart_data):
     fig = px.sunburst(
         data_frame=chart_data,

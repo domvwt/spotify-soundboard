@@ -129,7 +129,6 @@ def render_world_map(choropleth_view):
                 width=12,
                 children=html.Div(
                     children=[
-                        # dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
                         html.Div(
                             children=[
                                 dbc.Row(
@@ -141,10 +140,7 @@ def render_world_map(choropleth_view):
                                             children=dcc.Graph(
                                                 id="world-choropleth",
                                                 figure=charts.world_choropleth(
-                                                    views.choropleth_view(
-                                                        choropleth_view
-                                                    ),
-                                                    scope=None,
+                                                    choropleth_view,
                                                 ),
                                                 config={"displayModeBar": False},
                                             ),
@@ -195,7 +191,7 @@ def render_country_profile(world_view, country_view):
     ]
 
     return [
-        html.H1("Country Profile", style={"margin-bottom": 30}),
+        html.H1("Country Profile", style={"margin-bottom": 20}),
         dbc.Row(
             [
                 dbc.Col(
@@ -255,7 +251,6 @@ def render_country_profile(world_view, country_view):
                     lg={"size": 6, "order": "last"},
                     children=[
                         dcc.Graph(
-                            style={"margin-top": 25, "margin-bottom": 15},
                             id="country-sunburst",
                             figure=charts.country_sunburst(country_view),
                             config={"displayModeBar": False},
@@ -414,5 +409,17 @@ def render_genre_space(world_view):
                     ),
                 ),
             ],
+        ),
+    ]
+
+
+def render_genre_tree(world_view):
+    return [
+        html.H1("Genre Map"),
+        dcc.Graph(
+            style={"margin-top": 0, "margin-bottom": 0, "height": "80vh"},
+            id="genre-tree",
+            figure=charts.genre_tree(world_view),
+            config={"displayModeBar": False},
         ),
     ]
