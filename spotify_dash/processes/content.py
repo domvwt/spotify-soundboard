@@ -151,15 +151,15 @@ def render_world_map(choropleth_view):
 
 def render_country_profile(world_view, country_view):
     country_table_col_dict = [
-                                 {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
-                             ] + [
-                                 {
-                                     "name": "Streams",
-                                     "id": "Streams",
-                                     "type": "numeric",
-                                     "format": Format(group=","),
-                                 }
-                             ]
+        {"name": column, "id": column} for column in ["Position", "Artist", "Genre"]
+    ] + [
+        {
+            "name": "Streams",
+            "id": "Streams",
+            "type": "numeric",
+            "format": Format(group=","),
+        }
+    ]
 
     return [
         dbc.Row(dbc.Col(html.H1("Country Profile"))),
@@ -217,7 +217,7 @@ def render_country_profile(world_view, country_view):
                                     html.H3("Top Artists", className="card-title")
                                 ),
                                 dbc.CardBody(
-                                    style={"padding-left": 40, "padding-right": 40, },
+                                    style={"padding-left": 40, "padding-right": 40},
                                     children=[
                                         html.Br(),
                                         ddt.DataTable(
@@ -250,6 +250,7 @@ def render_country_profile(world_view, country_view):
     ]
 
 
+# TODO: Add multiselector for countries
 def render_artists_trends(artist_view):
     return [
         dbc.Row(dbc.Col(html.H1("Top Artist Trends"))),
@@ -283,7 +284,7 @@ def render_artists_trends(artist_view):
                                                                     "value": "cumulative",
                                                                 },
                                                             ],
-                                                            value="snapshot"
+                                                            value="snapshot",
                                                         ),
                                                     ],
                                                 )
@@ -309,7 +310,6 @@ def render_artists_trends(artist_view):
                                                         ],
                                                         value=[],
                                                         switch=True,
-                                                        # inline=True,
                                                     ),
                                                 ],
                                             ),
@@ -334,9 +334,6 @@ def render_genre_space(world_view):
     return [
         dbc.Jumbotron(
             children=[
-                html.H1("Genre Affinity Clustering"),
-                html.P(style={"padding-left": 20}, children="LOREM IPSUM"),
-                html.Br(),
                 html.Div(
                     dbc.Row(
                         style={"padding-left": 20},
@@ -344,47 +341,64 @@ def render_genre_space(world_view):
                             dbc.Col(
                                 width=12,
                                 lg=3,
-                                children=dbc.FormGroup(
-                                    children=[
-                                        dbc.Label("3D"),
-                                        dbc.Checklist(
-                                            style={
-                                                "padding-left": 20,
-                                                "padding-bottom": 5,
-                                            },
-                                            id="tsne-dimension",
-                                            options=[dict(label="", value=True)],
-                                            value=False,
-                                            switch=True,
-                                        ),
-                                        dbc.Label("Principal Components"),
-                                        dcc.Slider(
-                                            id="tsne-pca",
-                                            min=10,
-                                            max=30,
-                                            step=1,
-                                            value=14,
-                                            marks={x: str(x) for x in range(10, 31, 4)},
-                                        ),
-                                        dbc.Label("Perplexity"),
-                                        dcc.Slider(
-                                            id="tsne-perplexity",
-                                            min=2,
-                                            max=20,
-                                            step=1,
-                                            value=5,
-                                            marks={x: str(x) for x in range(2, 21, 3)},
-                                        ),
-                                        dbc.Button(
-                                            id="tsne-regenerate",
-                                            outline=True,
-                                            color="light",
-                                            size="sm",
-                                            style={"margin-left": 5, "margin-top": 10},
-                                            children="Regenerate"
-                                        ),
-                                    ]
-                                ),
+                                children=[
+                                    html.H2("Genre Affinity Clustering"),
+                                    html.P(
+                                        style={"padding-left": 20},
+                                        children="LOREM IPSUM",
+                                    ),
+                                    html.Br(),
+                                    dbc.FormGroup(
+                                        children=[
+                                            dbc.Label("3D"),
+                                            dbc.Checklist(
+                                                style={
+                                                    "padding-left": 20,
+                                                    "padding-bottom": 5,
+                                                },
+                                                id="tsne-dimension",
+                                                options=[dict(label="", value=True)],
+                                                value=False,
+                                                switch=True,
+                                            ),
+                                            dbc.Label("Principal Components"),
+                                            dcc.Slider(
+                                                id="tsne-pca",
+                                                min=10,
+                                                max=30,
+                                                step=1,
+                                                value=14,
+                                                marks={
+                                                    x: str(x) for x in range(10, 31, 4)
+                                                },
+                                            ),
+                                            dbc.Label("Perplexity"),
+                                            dcc.Slider(
+                                                id="tsne-perplexity",
+                                                min=2,
+                                                max=20,
+                                                step=1,
+                                                value=5,
+                                                marks={
+                                                    x: str(x) for x in range(2, 21, 3)
+                                                },
+                                            ),
+                                            dbc.Label("Regenerate Clusters"),
+                                            html.Br(),
+                                            dbc.Button(
+                                                id="tsne-regenerate",
+                                                outline=True,
+                                                color="light",
+                                                size="sm",
+                                                style={
+                                                    "margin-left": 20,
+                                                    "margin-top": 3,
+                                                },
+                                                children="Regenerate",
+                                            ),
+                                        ]
+                                    ),
+                                ],
                             ),
                             dbc.Col(
                                 width=12,

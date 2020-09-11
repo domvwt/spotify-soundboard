@@ -39,6 +39,7 @@ def load_country_info() -> pd.DataFrame:
         index_col="#ISO",
         keep_default_na=False,
     )
+    # TODO: Specify dtypes here - shorter nums and categoricals
     df00.index.names = ["ISO2"]
     return df00
 

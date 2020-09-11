@@ -9,12 +9,11 @@ import processes.content as cnt
 import processes.views as views
 
 # TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
-# TODO: TSNE Viz - 2d / 3d - Colour by continent - Space Exploration
-# TODO: Artist Trends
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 # TODO: New style with colour gradient:
 #  style={'background': f'linear-gradient({DEEP_TEAL}, {DEEP_TEAL} 20%, {DARK_GREY})'},
 # TODO: Take everything OUT of card containers
+# TODO: Genre explorer in tree map - between country profile and artist trends
 
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard"
@@ -35,7 +34,7 @@ def cached_world_view():
 
 
 @cache.memoize(timeout=TIMEOUT)
-def cached_country_view(country_name):
+def cached_country_view(country_name="United Kingdom"):
     return views.country_view(country_name, cached_world_view())
 
 
@@ -147,7 +146,7 @@ def update_artist_trends(date_option, axis_option):
         Input(component_id="tsne-dimension", component_property="value"),
         Input(component_id="tsne-pca", component_property="value"),
         Input(component_id="tsne-perplexity", component_property="value"),
-        Input(component_id="tsne-regenerate", component_property="n_clicks")
+        Input(component_id="tsne-regenerate", component_property="n_clicks"),
     ],
 )
 def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):

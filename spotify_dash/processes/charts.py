@@ -74,9 +74,7 @@ def world_choropleth(chart_data: pd.DataFrame, scope=None):
         lataxis={"range": [-40, 90]} if scope == "world" else None,
     )
 
-    fig.update_layout(
-        coloraxis_colorbar=dict(tickprefix="10e")
-    )
+    fig.update_layout(coloraxis_colorbar=dict(tickprefix="10e"))
 
     return fig
 
@@ -88,6 +86,7 @@ def artist_trends(chart_data, log=False):
         data_frame=chart_data,
         x="date",
         y="Streams",
+        labels={"date": "Date"},
         color="Artist",
         # color_discrete_sequence=SEQ_COLS,
     )
@@ -112,6 +111,22 @@ def country_tsne_clustering(chart_data, plot3d=False):
             color_discrete_sequence=SEQ_COLS,
         )
         fig.update_layout(scene_aspectmode="cube")
+        fig.update_layout(
+            scene=dict(
+                xaxis_title="X",
+                yaxis_title="Y",
+                zaxis_title="Z",
+                xaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER,
+                ),
+                yaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER
+                ),
+                zaxis=dict(
+                    gridcolor=SILVER, showbackground=False, zerolinecolor=SILVER,
+                ),
+            ),
+        )
     else:
         fig = px.scatter(
             data_frame=chart_data,
@@ -123,6 +138,6 @@ def country_tsne_clustering(chart_data, plot3d=False):
         )
         fig.update_xaxes(visible=False)
         fig.update_yaxes(visible=False)
-        fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=1), height=500)
+        fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=1))
 
     return fig
