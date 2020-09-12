@@ -34,28 +34,7 @@ def cached_country_view(country_name="United Kingdom"):
 
 
 app.layout = html.Div(
-    style={"padding-bottom": "2rem"},
     children=[
-        dbc.NavbarSimple(
-            brand="clefbeam",
-            color="dark",
-            dark=True,
-            brand_style={"font-weight": "bold", "color": "white"},
-            children=dbc.DropdownMenu(
-                nav=True,
-                in_navbar=True,
-                label="Menu",
-                children=[
-                    dbc.DropdownMenuItem(
-                        "LinkedIn", href="https://www.linkedin.com/in/dominic-thorn/"
-                    ),
-                    dbc.DropdownMenuItem(
-                        "Github",
-                        href="https://github.com/domvwt/spotify-soundboard/tree/master",
-                    ),
-                ],
-            ),
-        ),
         # MAIN APP LAYOUT
         dbc.Container(
             style={
@@ -117,6 +96,37 @@ app.layout = html.Div(
                     style={"padding-left": 50, "padding-right": 50},
                     children=[*cnt.render_genre_tree(cached_world_view(),)],
                 ),
+            ],
+        ),
+        html.Div(
+            style={"padding-top": 20, "padding-bottom": 15, "background": "#073642"},
+            children=[
+                dbc.Row(
+                    justify="start",
+                    no_gutters=True,
+                    children=[
+                        dbc.Col(
+                            width={"size": 1, "offset": 1},
+                            children=[
+                                html.A(
+                                    "LinkedIn",
+                                    href="https://www.linkedin.com/in/dominic-thorn/",
+                                    style={"color": cnt.SILVER},
+                                )
+                            ],
+                        ),
+                        dbc.Col(
+                            width={"size": 1, "offset": 0},
+                            children=[
+                                html.A(
+                                    "Github",
+                                    href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                    style={"color": cnt.SILVER},
+                                )
+                            ],
+                        ),
+                    ],
+                )
             ],
         ),
     ],

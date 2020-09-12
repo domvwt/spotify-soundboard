@@ -415,11 +415,16 @@ def render_genre_space(world_view):
 
 def render_genre_tree(world_view):
     return [
-        html.H1("Genre Map"),
-        dcc.Graph(
-            style={"margin-top": 0, "margin-bottom": 0, "height": "80vh"},
-            id="genre-tree",
-            figure=charts.genre_tree(world_view),
-            config={"displayModeBar": False},
-        ),
+        html.Div(
+            style={"margin-top": "10vh", "margin-bottom": "10vh"},
+            children=[
+                html.H1("Genre Map"),
+                dcc.Graph(
+                    style={"height": "80vh"},
+                    id="genre-tree",
+                    figure=charts.genre_tree(world_view),
+                    config={"displayModeBar": False},
+                ),
+            ],
+        )
     ]
