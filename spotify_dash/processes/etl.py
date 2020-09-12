@@ -1,3 +1,4 @@
+import csv
 import datetime
 import itertools
 import os
@@ -38,12 +39,12 @@ def load_country_info() -> pd.DataFrame:
         index_col="#ISO",
         keep_default_na=False,
     )
+    # TODO: Specify dtypes here - shorter nums and categoricals
     df00.index.names = ["ISO2"]
     return df00
 
 
-def build_spotify_asset(start_date=None, top_tracks=100):
-
+def build_spotify_asset(start_date=None):
     weekly_data = os.listdir(STREAM_DATA_DIR)
     most_recent = max([file[-14:-4] for file in weekly_data])
 
@@ -61,15 +62,40 @@ def build_spotify_asset(start_date=None, top_tracks=100):
     ]
 
     def concatenate_country_csvs(csv_list: Iterable[str]) -> pd.DataFrame:
-        df_dict = {
-            (os.path.split(file)[1][:2].upper(), file[-14:-4]): read_try_csv(file)[
-                :top_tracks
-            ]
-            for file in tqdm(csv_list)
+        expected_columns = 'Position,"Track Name",Artist,Streams,URL'
+        target_columns = expected_columns.replace('"', "").split(",") + ["date", "ISO2"]
+
+        def process_csv(file_path):
+            date = file_path[-14:-4]
+            country = os.path.split(file_path)[1][:2].upper()
+            records = list()
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                next(f)  # Skip the first row
+                if expected_columns in f.readline():  # Check and skip the headers
+                    lines = list(csv.reader(f))
+                    records += [x + [date, country] for x in lines]
+                else:
+                    print(f"Unexpected file format: {file_path}")
+
+            return records
+
+        data = [process_csv(csv_path) for csv_path in tqdm(csv_list)]
+        data = list(itertools.chain.from_iterable(data))
+
+        dtypes = {
+            "Position": int,
+            "Track Name": str,
+            "Artist": str,
+            "Streams": int,
+            "URL": str,
+            "date": str,
+            "ISO2": str,
         }
-        return pd.concat(
-            df_dict, axis=0, keys=df_dict.keys(), names=("ISO2", "date", "orig")
-        ).droplevel(level="orig")
+
+        df = pd.DataFrame(data, columns=target_columns).astype(dtypes)
+
+        return df
 
     if os.path.isfile(ARTIST_GENRE_MANY_MAP):
         print(f"Loaded artist -> all genre map from: {ARTIST_GENRE_MANY_MAP}")
@@ -143,12 +169,3 @@ def build_spotify_asset(start_date=None, top_tracks=100):
 def load_spotify_asset(mode="local"):
     if mode == "local":
         return pd.read_pickle(SPOTIFY_ASSET_PATH)
-
-
-def read_try_csv(path):
-    try:
-        result = pd.read_csv(path, skiprows=1, encoding="utf-8")
-    except pd.errors.ParserError:
-        print(Exception(f"File is not a csv: {path}"))
-        result = pd.DataFrame()
-    return result

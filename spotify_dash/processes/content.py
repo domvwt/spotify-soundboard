@@ -47,32 +47,64 @@ def render_dashboard_status(world_view):
                     align="start",
                     style={"margin-bottom": 15},
                     children=html.Div(
+                        style={"padding-left": 8},
                         children=[
-                            html.H1("Spotify Soundboard"),
-                            dcc.Markdown(
-                                style={"padding-left": 10},
+                            html.H1("Spotify Soundboard", style={"margin-bottom": 15}),
+                            html.Div(
+                                style={"padding-left": 5},
                                 children=[
-                                    "An interactive visualisation of music streaming around the world.  \n"
-                                    "Made using [Dash](https://plotly.com/dash/) "
-                                    "with data from [Spotify](https://spotifycharts.com/regional)."
-                                    "\n\n"
-                                    f"This report was generated using data for the weekly **top 100** streamed tracks "
-                                    f"in each country for each of the last **{weeks}** weeks."
-                                    f"\n\n"
-                                    f"You can view the code on "
-                                    f"[Github](https://github.com/domvwt/spotify-soundboard/tree/master) "
-                                    f"or contact me by [email](mailto:dominic.thorn@gmail.com) for more information!"
+                                    html.P(
+                                        "An interactive visualisation of music streaming around the world."
+                                    ),
+                                    html.Span(
+                                        children=[
+                                            "Powered by ",
+                                            html.A(
+                                                "Dash ",
+                                                href="https://plotly.com/dash/",
+                                                style={"color": "thistle"},
+                                            ),
+                                            "with data from ",
+                                            html.A(
+                                                "Spotify.",
+                                                href="https://spotifycharts.com/regional",
+                                                style={"color": "thistle"},
+                                            ),
+                                        ]
+                                    ),
+                                    html.P(),
+                                    html.Span(
+                                        children=[
+                                            dcc.Markdown(
+                                                children=[
+                                                    f"This report was generated using data for the weekly **top 100** streamed tracks "
+                                                    f"in each country for each of the last **{weeks}** weeks."
+                                                ]
+                                            ),
+                                            html.P(),
+                                            html.Span(
+                                                children=[
+                                                    "Code available on ",
+                                                    html.A(
+                                                        "Github.",
+                                                        href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                                        style={"color": "thistle"},
+                                                    ),
+                                                ]
+                                            ),
+                                        ]
+                                    ),
                                 ],
                             ),
-                        ]
+                        ],
                     ),
                 ),
                 dbc.Col(
                     md=12,
-                    lg=3,
+                    lg=5,
                     align="center",
                     children=html.Div(
-                        style={"padding-top": 30, "padding-left": 10},
+                        style={"padding-top": 30, "padding-left": 13},
                         children=stats_object,
                     ),
                 ),
@@ -83,44 +115,61 @@ def render_dashboard_status(world_view):
 
 def render_world_map(choropleth_view):
     scope_options = [
+        {"label": "World", "value": "world"},
         {"label": "Europe", "value": "europe"},
         {"label": "North America", "value": "north america"},
         {"label": "South America", "value": "south america"},
         {"label": "Asia", "value": "asia"},
         {"label": "Africa", "value": "africa"},
-        {"label": "World", "value": "world"},
     ]
     return [
         html.H1("World View"),
         dbc.Row(
-            dbc.Col(
-                md=12,
-                style={"padding-top": 10},
-                children=dcc.Dropdown(
-                    id="choropleth-input",
-                    options=scope_options,
-                    placeholder="Select a region...",
-                ),
-            )
-        ),
-        html.Br(),
-        dbc.Row(
             children=dbc.Col(
                 width=12,
-                children=dbc.Card(
+                children=html.Div(
                     children=[
-                        dbc.CardHeader(html.H3("Stream Atlas", className="card-title")),
-                        dbc.CardBody(
-                            html.Div(
-                                children=dcc.Graph(
-                                    id="world-choropleth",
-                                    figure=charts.world_choropleth(
-                                        views.choropleth_view(choropleth_view),
-                                        scope=None,
-                                    ),
-                                    config={"displayModeBar": False},
+                        html.Div(
+                            children=[
+                                dbc.Row(
+                                    children=[
+                                        dbc.Col(
+                                            md={"size": 12, "order": "first"},
+                                            lg={"size": 9, "order": "last"},
+                                            xl={"size": 10, "order": "last"},
+                                            children=dcc.Graph(
+                                                id="world-choropleth",
+                                                figure=charts.world_choropleth(
+                                                    choropleth_view,
+                                                ),
+                                                config={"displayModeBar": False},
+                                            ),
+                                        ),
+                                        dbc.Col(
+                                            md={"size": 12, "order": "last"},
+                                            lg={"size": 3, "order": "first"},
+                                            xl={"size": 2, "order": "first"},
+                                            children=html.Div(
+                                                children=[
+                                                    dbc.CardBody(
+                                                        style={"font-size": 14},
+                                                        children=dbc.FormGroup(
+                                                            children=[
+                                                                dbc.Label("Scope"),
+                                                                dbc.RadioItems(
+                                                                    id="choropleth-input",
+                                                                    options=scope_options,
+                                                                    value="world",
+                                                                ),
+                                                            ]
+                                                        ),
+                                                    )
+                                                ],
+                                            ),
+                                        ),
+                                    ],
                                 )
-                            )
+                            ]
                         ),
                     ]
                 ),
@@ -142,91 +191,235 @@ def render_country_profile(world_view, country_view):
     ]
 
     return [
+        html.H1("Country Profile", style={"margin-bottom": 20}),
+        dbc.Row(
+            [
+                dbc.Col(
+                    md={"size": 12, "order": "last"},
+                    lg={"size": 6, "order": "first"},
+                    children=[
+                        html.Div(
+                            style={
+                                "padding-left": 20,
+                                "padding-right": 30,
+                                "margin-top": 30,
+                            },
+                            children=[
+                                dcc.Dropdown(
+                                    id="country-input",
+                                    style={"padding-left": 0},
+                                    options=[
+                                        {"label": country, "value": country}
+                                        for country in np.sort(
+                                            world_view["Country"].unique()
+                                        )
+                                    ],
+                                    placeholder="Select a country...",
+                                ),
+                                html.Br(),
+                                ddt.DataTable(
+                                    id="country-table",
+                                    style_table={
+                                        "padding-left": 17,
+                                        "padding-right": 17,
+                                    },
+                                    columns=country_table_col_dict,
+                                    data=country_view.to_dict("records"),
+                                    style_header={
+                                        "backgroundColor": DEEP_TEAL,
+                                        "color": SILVER,
+                                    },
+                                    style_cell={
+                                        "textAlign": "left",
+                                        "backgroundColor": DEEP_TEAL,
+                                        "color": SILVER,
+                                        "fontSize": 14,
+                                        "font-family": "Helvetica",
+                                    },
+                                    style_as_list_view=True,
+                                    sort_action="native",
+                                    page_action="native",
+                                    page_current=0,
+                                    page_size=10,
+                                ),
+                            ],
+                        )
+                    ],
+                ),
+                dbc.Col(
+                    md={"size": 12, "order": "first"},
+                    lg={"size": 6, "order": "last"},
+                    children=[
+                        dcc.Graph(
+                            id="country-sunburst",
+                            figure=charts.country_sunburst(country_view),
+                            config={"displayModeBar": False},
+                        ),
+                    ],
+                ),
+            ]
+        ),
+    ]
+
+
+def render_artists_trends(artist_view, world_view):
+    artist_options = [
+        {"label": artist, "value": artist}
+        for artist in (
+            world_view.groupby("Artist", group_keys=False)["Streams"]
+            .sum()
+            .reset_index()
+            .sort_values(by="Streams", ascending=False)
+            .Artist.unique()
+        )
+    ]
+
+    return [
+        html.H1("Artist Trends"),
         html.Br(),
-        dbc.Row(dbc.Col(html.H1("Country Profile"))),
         dbc.Row(
             children=[
                 dbc.Col(
-                    md=12,
-                    style={"padding-top": 10},
-                    children=dcc.Dropdown(
-                        id="country-input",
-                        options=[
-                            {"label": country, "value": country}
-                            for country in np.sort(world_view["Country"].unique())
+                    width=6,
+                    md=3,
+                    children=[
+                        dbc.FormGroup(
+                            style={"padding-left": 35},
+                            children=[
+                                dbc.RadioItems(
+                                    id="artist-trends-date-options",
+                                    options=[
+                                        {"label": "Snapshot", "value": "snapshot",},
+                                        {"label": "Cumulative", "value": "cumulative",},
+                                    ],
+                                    value="snapshot",
+                                ),
+                            ],
+                        )
+                    ],
+                ),
+                dbc.Col(
+                    width=6,
+                    md=3,
+                    children=dbc.FormGroup(
+                        style={"padding-left": 0},
+                        children=[
+                            dbc.Checklist(
+                                id="artist-trends-axis-options",
+                                options=[
+                                    {"label": "Log y Axis", "value": "log-y",},
+                                    {
+                                        "label": "Rolling 4wk Avg.",
+                                        "value": "rolling-avg",
+                                    },
+                                ],
+                                value=[],
+                                switch=True,
+                            ),
                         ],
-                        placeholder="Select a country...",
+                    ),
+                ),
+            ]
+        ),
+        dcc.Graph(
+            id="artist-trends",
+            style={"margin-bottom": 15},
+            figure=charts.artist_trends(artist_view),
+            config={"displayModeBar": False},
+        ),
+        dbc.Row(
+            children=[
+                dbc.Col(
+                    width=12,
+                    children=dcc.Dropdown(
+                        id="artist-trends-selection",
+                        style={"padding-left": 0},
+                        options=artist_options,
+                        value=artist_view.loc[:10, "Artist"],
+                        multi=True,
+                    ),
+                ),
+            ]
+        ),
+    ]
+
+
+def render_genre_space(world_view):
+    return [
+        html.H1("Genre Affinity Clusters"),
+        dbc.Row(
+            children=[
+                dbc.Col(
+                    width=12,
+                    lg=3,
+                    style={"padding-left": 20},
+                    children=[
+                        dbc.FormGroup(
+                            children=[
+                                dbc.Label("3D"),
+                                dbc.Checklist(
+                                    style={"padding-left": 20, "padding-bottom": 5,},
+                                    id="tsne-dimension",
+                                    options=[dict(label="", value=True)],
+                                    value=False,
+                                    switch=True,
+                                ),
+                                dbc.Label("Principal Components"),
+                                dcc.Slider(
+                                    id="tsne-pca",
+                                    min=10,
+                                    max=30,
+                                    step=1,
+                                    value=14,
+                                    marks={x: str(x) for x in range(10, 31, 4)},
+                                ),
+                                dbc.Label("Perplexity"),
+                                dcc.Slider(
+                                    id="tsne-perplexity",
+                                    min=2,
+                                    max=20,
+                                    step=1,
+                                    value=5,
+                                    marks={x: str(x) for x in range(2, 21, 3)},
+                                ),
+                                dbc.Label("Regenerate Clusters"),
+                                html.Br(),
+                                dbc.Button(
+                                    id="tsne-regenerate",
+                                    outline=True,
+                                    color="light",
+                                    size="sm",
+                                    style={"margin-left": 20, "margin-top": 9},
+                                    children="Regenerate",
+                                ),
+                            ]
+                        ),
+                    ],
+                ),
+                dbc.Col(
+                    width=12,
+                    lg=9,
+                    children=dcc.Graph(
+                        id="country-clustering",
+                        style={"margin-top": 15},
+                        figure=charts.country_tsne_clustering(
+                            chart_data=views.tsne_genre_view(world_view),
+                        ),
+                        config={"displayModeBar": False},
                     ),
                 ),
             ],
         ),
-        html.Br(),
-        dbc.Row(
-            [
-                dbc.Col(
-                    md=12,
-                    lg=6,
-                    children=[
-                        dbc.Card(
-                            style={"margin-bottom": 15},
-                            children=[
-                                dbc.CardHeader(
-                                    html.H3("Stream Breakdown", className="card-title")
-                                ),
-                                dbc.CardBody(
-                                    [
-                                        dcc.Graph(
-                                            id="country-sunburst",
-                                            figure=charts.country_sunburst(
-                                                country_view
-                                            ),
-                                            config={"displayModeBar": False},
-                                        )
-                                    ]
-                                ),
-                            ],
-                        )
-                    ],
-                ),
-                dbc.Col(
-                    md=12,
-                    lg=6,
-                    children=[
-                        dbc.Card(
-                            style={"margin-bottom": 15},
-                            children=[
-                                dbc.CardHeader(
-                                    html.H3("Top Artists", className="card-title")
-                                ),
-                                dbc.CardBody(
-                                    style={"padding-left": 40, "padding-right": 40,},
-                                    children=[
-                                        html.Br(),
-                                        ddt.DataTable(
-                                            id="country-table",
-                                            columns=country_table_col_dict,
-                                            data=country_view.to_dict("records"),
-                                            style_header={
-                                                "backgroundColor": SLATE,
-                                                "color": SILVER,
-                                            },
-                                            style_cell={
-                                                "textAlign": "left",
-                                                "backgroundColor": SILVER,
-                                                "color": DARK_GREY,
-                                            },
-                                            style_as_list_view=True,
-                                            sort_action="native",
-                                            page_action="native",
-                                            page_current=0,
-                                            page_size=10,
-                                        ),
-                                    ],
-                                ),
-                            ],
-                        )
-                    ],
-                ),
-            ]
+    ]
+
+
+def render_genre_tree(world_view):
+    return [
+        html.H1("Genre Map"),
+        dcc.Graph(
+            style={"margin-top": 0, "margin-bottom": 0, "height": "80vh"},
+            id="genre-tree",
+            figure=charts.genre_tree(world_view),
+            config={"displayModeBar": False},
         ),
     ]

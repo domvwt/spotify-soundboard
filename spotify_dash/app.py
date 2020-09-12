@@ -8,9 +8,6 @@ import processes.charts as charts
 import processes.content as cnt
 import processes.views as views
 
-# TODO: Tips: hover for info, scroll to zoom, drag to change view, click to drill down...
-# TODO: TSNE Viz - 2d / 3d - Colour by continent - Space Exploration
-# TODO: Artist Trends
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
 app = dash.Dash(
@@ -32,7 +29,7 @@ def cached_world_view():
 
 
 @cache.memoize(timeout=TIMEOUT)
-def cached_country_view(country_name):
+def cached_country_view(country_name="United Kingdom"):
     return views.country_view(country_name, cached_world_view())
 
 
@@ -59,25 +56,67 @@ app.layout = html.Div(
                 ],
             ),
         ),
-        # MAIN APP CONTAINER
+        # MAIN APP LAYOUT
         dbc.Container(
             style={
-                "padding-left": "auto",
+                "padding-left": "5%",
                 "margin-left": "auto",
-                "padding-right": "auto",
+                "padding-right": "5%",
                 "margin-right": "auto",
             },
+            fluid=True,
             children=[
                 html.Br(),
-                *cnt.render_dashboard_status(cached_world_view()),
                 html.Br(),
-                *cnt.render_world_map(cached_world_view()),
-                html.Br(),
-                *cnt.render_country_profile(
-                    cached_world_view(),
-                    cached_country_view(country_name="United Kingdom"),
+                dbc.Jumbotron(
+                    style={
+                        "background": "linear-gradient("
+                        "to right top, "
+                        "rgb(253, 159, 108), "
+                        "rgb(182, 54, 121) 30%, "
+                        "rgb(59, 15, 111)"
+                        ")",
+                        "color": "rgb(240, 240, 240)",
+                    },
+                    children=[*cnt.render_dashboard_status(cached_world_view())],
                 ),
                 html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[
+                        *cnt.render_world_map(
+                            views.choropleth_view(cached_world_view())
+                        )
+                    ],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[
+                        *cnt.render_country_profile(
+                            cached_world_view(),
+                            cached_country_view(country_name="United Kingdom"),
+                        )
+                    ],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[
+                        *cnt.render_artists_trends(
+                            views.artist_view(cached_world_view()), cached_world_view()
+                        )
+                    ],
+                ),
+                html.Br(),
+                dbc.Jumbotron(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[*cnt.render_genre_space(cached_world_view())],
+                ),
+                html.Div(
+                    style={"padding-left": 50, "padding-right": 50},
+                    children=[*cnt.render_genre_tree(cached_world_view(),)],
+                ),
             ],
         ),
     ],
@@ -108,6 +147,53 @@ def update_country_sunburst(input_value):
 )
 def update_country_table(input_value):
     return cached_country_view(input_value).to_dict("records")
+
+
+@app.callback(
+    Output(component_id="artist-trends", component_property="figure"),
+    [
+        Input(component_id="artist-trends-date-options", component_property="value"),
+        Input(component_id="artist-trends-axis-options", component_property="value"),
+        Input(component_id="artist-trends-selection", component_property="value"),
+    ],
+)
+def update_artist_trends(date_option, axis_option, artists):
+    log = True if "log-y" in axis_option else False
+    rolling = True if "rolling-avg" in axis_option else False
+
+    cumulative = True if "cumulative" in date_option else False
+
+    return charts.artist_trends(
+        chart_data=views.artist_view(
+            cached_world_view(),
+            cumulative=cumulative,
+            rolling_avg=rolling,
+            artists=artists,
+        ),
+        log=log,
+    )
+
+
+# noinspection PyUnusedLocal
+@app.callback(
+    Output(component_id="country-clustering", component_property="figure"),
+    [
+        Input(component_id="tsne-dimension", component_property="value"),
+        Input(component_id="tsne-pca", component_property="value"),
+        Input(component_id="tsne-perplexity", component_property="value"),
+        Input(component_id="tsne-regenerate", component_property="n_clicks"),
+    ],
+)
+def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
+    return charts.country_tsne_clustering(
+        chart_data=views.tsne_genre_view(
+            world_view_df=cached_world_view(),
+            principal_components=tsne_pca,
+            dims3d=tsne_3d,
+            perplexity=tsne_perplexity,
+        ),
+        plot3d=tsne_3d,
+    )
 
 
 if __name__ == "__main__":
