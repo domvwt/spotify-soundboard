@@ -44,7 +44,7 @@ def load_country_info() -> pd.DataFrame:
     return df00
 
 
-def build_spotify_asset(start_date=None, top_tracks=100):
+def build_spotify_asset(start_date=None):
     weekly_data = os.listdir(STREAM_DATA_DIR)
     most_recent = max([file[-14:-4] for file in weekly_data])
 
