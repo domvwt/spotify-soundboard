@@ -416,7 +416,7 @@ def render_genre_space(world_view):
 def render_genre_tree(world_view):
     return [
         html.Div(
-            style={"margin-top": "10vh", "margin-bottom": "10vh"},
+            style={"margin-bottom": "15vh"},
             children=[
                 html.H1("Genre Map"),
                 dcc.Graph(
