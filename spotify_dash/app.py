@@ -92,6 +92,7 @@ app.layout = html.Div(
                     style={"padding-left": 50, "padding-right": 50},
                     children=[*cnt.render_genre_space(cached_world_view())],
                 ),
+                html.Br(),
                 html.Div(
                     style={"padding-left": 50, "padding-right": 50},
                     children=[*cnt.render_genre_tree(cached_world_view(),)],
