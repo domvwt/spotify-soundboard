@@ -4,9 +4,9 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask_caching import Cache
 
-import processes.charts as charts
-import processes.content as cnt
-import processes.views as views
+import core.charts as charts
+import core.content as cnt
+import core.views as views
 
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
