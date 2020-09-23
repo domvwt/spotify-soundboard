@@ -9,11 +9,11 @@ from typing import Iterable
 import pandas as pd
 from tqdm import tqdm
 
-from processes import apicall as api
+from utils import apicall as api
 from settings import (
     STREAM_DATA_DIR,
     SPOTIFY_ASSET_PATH,
-    ARTIST_GENRE_ONE_MAP,
+    ARTIST_GENRE_PRIME_MAP,
     ARTIST_GENRE_MANY_MAP,
     GEOGRAPHY_DATA_PATH,
 )
@@ -105,12 +105,12 @@ def build_spotify_asset(start_date=None):
     else:
         print(f"No map found at {ARTIST_GENRE_MANY_MAP}")
         artist_to_genre_many = dict()
-    if os.path.isfile(ARTIST_GENRE_ONE_MAP):
-        print(f"Loaded artist -> primary genre many map from: {ARTIST_GENRE_ONE_MAP}")
-        with open(ARTIST_GENRE_ONE_MAP, "rb") as f:
+    if os.path.isfile(ARTIST_GENRE_PRIME_MAP):
+        print(f"Loaded artist -> primary genre many map from: {ARTIST_GENRE_PRIME_MAP}")
+        with open(ARTIST_GENRE_PRIME_MAP, "rb") as f:
             artist_to_genre_one = pickle.load(f, encoding="utf-8")
     else:
-        print(f"No map found at {ARTIST_GENRE_ONE_MAP}")
+        print(f"No map found at {ARTIST_GENRE_PRIME_MAP}")
         artist_to_genre_one = dict()
 
     # Load raw data files.
@@ -166,7 +166,7 @@ def build_spotify_asset(start_date=None):
     with open(ARTIST_GENRE_MANY_MAP, "wb") as f:
         pickle.dump(artist_to_genre_many, f)
 
-    with open(ARTIST_GENRE_ONE_MAP, "wb") as f:
+    with open(ARTIST_GENRE_PRIME_MAP, "wb") as f:
         pickle.dump(artist_to_genre_one, f)
 
     spotify_df_01.to_pickle(SPOTIFY_ASSET_PATH)
