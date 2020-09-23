@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-import processes.etl as etl
+import utils.etl as etl
 
 
 def world_view() -> pd.DataFrame:

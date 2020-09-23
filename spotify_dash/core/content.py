@@ -5,7 +5,7 @@ import dash_table as ddt
 import numpy as np
 from dash_table.Format import Format
 
-from processes import charts as charts, views as views
+from core import charts as charts, views as views
 
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
