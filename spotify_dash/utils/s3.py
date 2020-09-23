@@ -1,13 +1,16 @@
 import boto3
+import os
 from botocore.exceptions import NoCredentialsError, ClientError
 
 
 class BucketObjectConn:
-    def __init__(self, aws_access_key_id, aws_secret_access_key, bucket_name, object_name):
-        print(f"Connecting to S3 object: {bucket_name}/{object_name}...", end=" ")
-        self.conn = boto3.client("s3", aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-        print("Complete.")
-        self.bucket = bucket_name
+    def __init__(self, object_name):
+        self.conn = boto3.client(
+            "s3",
+            aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
+            aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
+        )
+        self.bucket = os.environ["S3_BUCKET_NAME"]
         self.object = object_name
 
     def exists(self):

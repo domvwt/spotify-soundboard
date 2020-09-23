@@ -30,23 +30,14 @@ from utils.dates import last_friday
 import utils.etl as etl
 
 spotify_s3conn = s3u.BucketObjectConn(
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    bucket_name=sts.S3_BUCKET_NAME,
     object_name=sts.SPOTIFY_ASSET_PATH.name
 )
 
 artist_genre_many_s3conn = s3u.BucketObjectConn(
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    bucket_name=sts.S3_BUCKET_NAME,
     object_name=sts.ARTIST_GENRE_MANY_MAP.name
 )
 
 artist_genre_prime_s3conn = s3u.BucketObjectConn(
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    bucket_name=sts.S3_BUCKET_NAME,
     object_name=sts.ARTIST_GENRE_PRIME_MAP.name
 )
 
@@ -96,7 +87,7 @@ else:
     # If spotify data is available
     if spotify_downloader.is_available():
         print("Downloading Spotify data.")
-        if spotify_downloader.download():      
+        if spotify_downloader.download():
             # Create DataFrame from Spotify data
             spotify_new_df = etl.build_spotify_asset(sts.SPOTIFY_DATA_DIR, start_date=report_start)
 
