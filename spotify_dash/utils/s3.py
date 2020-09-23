@@ -1,5 +1,5 @@
 import boto3
-from botocore.exceptions import NoCredentialsError, DataNotFoundError, ClientError
+from botocore.exceptions import NoCredentialsError, ClientError
 
 
 class BucketObjectConn:
@@ -9,6 +9,14 @@ class BucketObjectConn:
         print("Complete.")
         self.bucket = bucket_name
         self.object = object_name
+
+    def exists(self):
+        try:
+            self.conn.head_object(Bucket=self.bucket, Key=self.object)
+            return True
+        except ClientError:
+            print("S3 asset not found")
+            return False
 
     def upload(self, file_path):
         print(f"Uploading {file_path.name} to S3://{self.bucket}/{self.object}...", end=" ")
@@ -37,4 +45,8 @@ class BucketObjectConn:
             return False
 
     def last_update(self):
-        return self.conn.head_object(Bucket=self.bucket, Key=self.object)["LastModified"]
+        try:
+            return self.conn.head_object(Bucket=self.bucket, Key=self.object)["LastModified"]
+        except ClientError:
+            print("S3 asset not found")
+            return False

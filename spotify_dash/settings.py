@@ -10,7 +10,7 @@ RESOURCE = os.path.abspath(os.path.join(BASE_DIRECTORY, "resources"))
 
 S3_BUCKET_NAME = "spotify-soundboard-assets"
 SPOTIFY_ASSET_PATH = pathlib.Path(RESOURCE, f"processed/spotify_data.pkl.bz")
-STREAM_DATA_DIR = pathlib.Path(RESOURCE, "external/spotifycharts/weekly/")
+SPOTIFY_DATA_DIR = pathlib.Path(RESOURCE, "external/spotifycharts/weekly/")
 ARTIST_GENRE_MANY_MAP = pathlib.Path(
     RESOURCE, "interim/artists/artist-to-genre-many.pkl"
 )

@@ -1,6 +1,7 @@
 import csv
 import datetime as dt
 import itertools
+import pathlib
 import os
 import pickle
 from collections import Counter
@@ -9,9 +10,12 @@ from typing import Iterable
 import pandas as pd
 from tqdm import tqdm
 
+# TODO: Replace os with pathlib
+# TODO: Take artist -> genre maps as input and keep on s3
+
 from utils import apicall as api
 from settings import (
-    STREAM_DATA_DIR,
+    SPOTIFY_DATA_DIR,
     SPOTIFY_ASSET_PATH,
     ARTIST_GENRE_PRIME_MAP,
     ARTIST_GENRE_MANY_MAP,
@@ -44,8 +48,8 @@ def load_country_info() -> pd.DataFrame:
     return df00
 
 
-def build_spotify_asset(start_date=None):
-    weekly_data = os.listdir(STREAM_DATA_DIR)
+def build_spotify_asset(data_dir: pathlib.Path, start_date=None):
+    weekly_data = data_dir.iterdir()
     most_recent = max([file[-14:-4] for file in weekly_data])
 
     if start_date is None:
@@ -56,7 +60,7 @@ def build_spotify_asset(start_date=None):
     print("Start date:", start_date)
 
     spotify_weekly_paths = [
-        os.path.join(STREAM_DATA_DIR, file)
+        os.path.join(data_dir, file)
         for file in weekly_data
         if file[-14:-4] >= start_date.strftime("%Y-%m-%d")
     ]
