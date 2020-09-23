@@ -1,4 +1,4 @@
-from processes.etl import build_spotify_asset
+from utils.etl import build_spotify_asset
 
 
 def main() -> None:
