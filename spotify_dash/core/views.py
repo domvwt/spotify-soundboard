@@ -26,7 +26,6 @@ def world_view(spotify_asset_path, geographic_data_path) -> pd.DataFrame:
         .sum()
         .to_frame()
     )
-    country_info_00 = etl.load_country_info()
     country_info_00 = etl.load_country_info(geographic_data_path)
     country_info_00.loc[:, "Continent"] = country_info_00.loc[:, "Continent"].map(
         {
@@ -199,7 +198,3 @@ def tsne_genre_view(
 
     return genre_tsne_df
 
-
-if __name__ == "__main__":
-    df = tsne_genre_view(world_view())
-    print("Done.")
