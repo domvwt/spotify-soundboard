@@ -4,10 +4,9 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask_caching import Cache
 
-import core.charts as charts
-import core.content as cnt
-import core.views as views
-import settings as sts
+import processes.charts as charts
+import processes.content as cnt
+import processes.views as views
 
 # TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
@@ -26,17 +25,12 @@ TIMEOUT = 1800  # In seconds; 1800s = 30 minutes
 
 @cache.memoize(timeout=TIMEOUT)
 def cached_world_view():
-    return views.world_view(sts.SPOTIFY_ASSET_PATH, sts.GEOGRAPHY_DATA_PATH)
+    return views.world_view()
 
 
 @cache.memoize(timeout=TIMEOUT)
-def cached_country_view(country_name):
-    return views.country_view(
-        country_name,
-        sts.SPOTIFY_ASSET_PATH,
-        sts.GEOGRAPHY_DATA_PATH,
-        world_view_df=cached_world_view(),
-    )
+def cached_country_view(country_name="United Kingdom"):
+    return views.country_view(country_name, cached_world_view())
 
 
 app.layout = html.Div(
