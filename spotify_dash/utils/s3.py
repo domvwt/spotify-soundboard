@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 import boto3
 from botocore.exceptions import NoCredentialsError, ClientError
@@ -38,12 +39,13 @@ class BucketObjectConn:
             print("AWS credentials error:", e)
             return False
 
-    def download(self, destination_path):
+    def download(self, destination_path: pathlib.Path):
         print(
             f"Downloading S3://{self.bucket}/{self.object} to {destination_path}...",
             end=" ",
         )
         try:
+            destination_path.parent.absolute().mkdir(parents=True, exist_ok=True)
             self.conn.download_file(self.bucket, self.object, str(destination_path))
             print("Complete.")
             return True
