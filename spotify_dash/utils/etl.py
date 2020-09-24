@@ -1,29 +1,21 @@
 import csv
-import datetime as dt
 import itertools
 import pathlib
-import os
-import pickle
 from collections import Counter
 from typing import Iterable
 
 import pandas as pd
 from tqdm import tqdm
 
+import utils.io as iou
+from utils import apicall as api
+
+
 # TODO: Replace os with pathlib
 # TODO: Take artist -> genre maps as input and keep on s3
 
-from utils import apicall as api
-from settings import (
-    SPOTIFY_DATA_DIR,
-    SPOTIFY_ASSET_PATH,
-    ARTIST_GENRE_PRIME_MAP,
-    ARTIST_GENRE_MANY_MAP,
-    GEOGRAPHY_DATA_PATH,
-)
 
-
-def load_country_info() -> pd.DataFrame:
+def load_country_info(geographic_data_path) -> pd.DataFrame:
     keepcols = [
         "#ISO",
         "ISO3",
@@ -36,7 +28,7 @@ def load_country_info() -> pd.DataFrame:
     ]
     # Ignore the first 49 rows as these are not part of the tabular data.
     df00 = pd.read_csv(
-        GEOGRAPHY_DATA_PATH,
+        geographic_data_path,
         delimiter="\t",
         skiprows=49,
         usecols=keepcols,
@@ -48,36 +40,34 @@ def load_country_info() -> pd.DataFrame:
     return df00
 
 
-def build_spotify_asset(data_dir: pathlib.Path, start_date=None):
-    weekly_data = data_dir.iterdir()
-    most_recent = max([file[-14:-4] for file in weekly_data])
+def build_spotify_assets(
+    spotify_weekly_dir: pathlib.Path,
+    artist_genre_many: dict,
+    artist_genre_prime: dict,
+    start_date=None,
+):
 
-    if start_date is None:
-        start_date = dt.datetime.strptime(most_recent, "%Y-%m-%d") - dt.timedelta(
-            weeks=51
-        )
-
-    print("Start date:", start_date)
+    weekly_data = spotify_weekly_dir.iterdir()
 
     spotify_weekly_paths = [
-        os.path.join(data_dir, file)
+        pathlib.Path(spotify_weekly_dir, file)
         for file in weekly_data
-        if file[-14:-4] >= start_date.strftime("%Y-%m-%d")
+        if file.name[-14:-4] >= start_date.strftime("%Y-%m-%d")
     ]
 
     def concatenate_country_csvs(csv_list: Iterable[str]) -> pd.DataFrame:
         expected_columns = 'Position,"Track Name",Artist,Streams,URL'
         target_columns = expected_columns.replace('"', "").split(",") + ["date", "ISO2"]
 
-        def process_csv(file_path):
+        def process_csv(file_path: pathlib.Path):
             date = file_path[-14:-4]
-            country = os.path.split(file_path)[1][:2].upper()
+            country = file_path.name[:2].upper()
             records = list()
 
-            with open(file_path, "r", encoding="utf-8") as f:
+            with file_path.open("r", encoding="utf-8") as f:
                 next(f)  # Skip the first row
                 if expected_columns in f.readline():  # Check and skip the headers
-                    lines = list(csv.reader(f))
+                    lines = list(csv.reader(f))[:100]  # Keep only the top 100
                     records += [x + [date, country] for x in lines]
                 else:
                     print(f"Unexpected file format: {file_path}")
@@ -102,27 +92,14 @@ def build_spotify_asset(data_dir: pathlib.Path, start_date=None):
 
         return df
 
-    if os.path.isfile(ARTIST_GENRE_MANY_MAP):
-        print(f"Loaded artist -> all genre map from: {ARTIST_GENRE_MANY_MAP}")
-        with open(ARTIST_GENRE_MANY_MAP, "rb") as f:
-            artist_to_genre_many = pickle.load(f, encoding="utf-8")
-    else:
-        print(f"No map found at {ARTIST_GENRE_MANY_MAP}")
-        artist_to_genre_many = dict()
-    if os.path.isfile(ARTIST_GENRE_PRIME_MAP):
-        print(f"Loaded artist -> primary genre many map from: {ARTIST_GENRE_PRIME_MAP}")
-        with open(ARTIST_GENRE_PRIME_MAP, "rb") as f:
-            artist_to_genre_one = pickle.load(f, encoding="utf-8")
-    else:
-        print(f"No map found at {ARTIST_GENRE_PRIME_MAP}")
-        artist_to_genre_one = dict()
-
     # Load raw data files.
     print("Concatenating files...")
     spotify_df_00 = concatenate_country_csvs(spotify_weekly_paths)
     spotify_df_01 = spotify_df_00.copy()
-    spotify_df_01.loc[:, "Genre"] = spotify_df_01.loc[:, "Artist"].map(
-        lambda x: artist_to_genre_one.get(x, None)
+    spotify_df_01.loc[:, "Genre"] = (
+        spotify_df_01.loc[:, "Artist"]
+        .map(lambda x: artist_genre_prime.get(x, None))
+        .astype(pd.CategoricalDtype)
     )
 
     # Check for new artists.
@@ -141,17 +118,17 @@ def build_spotify_asset(data_dir: pathlib.Path, start_date=None):
             lambda x: x.split("/")[-1]
         ).to_list()
         new_artists_map = api.get_genres_from_tracks(new_artist_track_ids)
-        artist_to_genre_many.update(new_artists_map)
+        artist_genre_many.update(new_artists_map)
 
         all_genres = list(
-            filter(lambda x: isinstance(x, list), artist_to_genre_many.values())
+            filter(lambda x: isinstance(x, list), artist_genre_many.values())
         )
         genre_list = list(itertools.chain.from_iterable(all_genres))
         c = Counter
         artists_per_genre = c(genre_list)
 
         # Map each new artist to the most common genre they are associated with.
-        artist_to_genre_one.update(
+        artist_genre_prime.update(
             {
                 artist: (
                     sorted(genres, key=lambda x: -artists_per_genre[x])[0].title()
@@ -164,19 +141,11 @@ def build_spotify_asset(data_dir: pathlib.Path, start_date=None):
 
         # Map primary genre to new songs.
         spotify_df_01.loc[:, "Genre"] = spotify_df_01.loc[:, "Artist"].map(
-            lambda x: artist_to_genre_one.get(x, None)
+            lambda x: artist_genre_prime.get(x, None)
         )
 
-    with open(ARTIST_GENRE_MANY_MAP, "wb") as f:
-        pickle.dump(artist_to_genre_many, f)
-
-    with open(ARTIST_GENRE_PRIME_MAP, "wb") as f:
-        pickle.dump(artist_to_genre_one, f)
-
-    spotify_df_01.to_pickle(SPOTIFY_ASSET_PATH)
-    print("Complete.")
+    return spotify_df_01, artist_genre_many, artist_genre_prime
 
 
-def load_spotify_asset(mode="local"):
-    if mode == "local":
-        return pd.read_pickle(SPOTIFY_ASSET_PATH)
+def load_spotify_asset(spotify_asset_path):
+    return iou.decompress_pickle(spotify_asset_path)

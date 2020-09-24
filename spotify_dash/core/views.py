@@ -5,14 +5,29 @@ from sklearn.manifold import TSNE
 import utils.etl as etl
 
 
-def world_view() -> pd.DataFrame:
-    spotify_df_00 = etl.load_spotify_asset()
+def world_view(spotify_asset_path, geographic_data_path) -> pd.DataFrame:
+    # IMPORTANT: Pandas has issues performing groupby operations on DataFrames containing categorical data.
+    # Categorical fields are explicitly converted to object type in the next step.
+
+    dtypes = {
+        "Position": "uint16",
+        "Track Name": "object",
+        "Artist": "object",
+        "Streams": "uint32",
+        "URL": "object",
+        "date": "datetime64[ns]",
+        "ISO2": "object",
+        "Genre": "object",
+    }
+
+    spotify_df_00 = etl.load_spotify_asset(spotify_asset_path).astype(dtypes)
     spotify_df_01 = (
         spotify_df_00.groupby(["ISO2", "date", "Artist", "Genre"])["Streams"]
         .sum()
         .to_frame()
     )
     country_info_00 = etl.load_country_info()
+    country_info_00 = etl.load_country_info(geographic_data_path)
     country_info_00.loc[:, "Continent"] = country_info_00.loc[:, "Continent"].map(
         {
             "AF": "Africa",
@@ -31,9 +46,15 @@ def world_view() -> pd.DataFrame:
     return world_view_df
 
 
-def country_view(country_name=None, world_view_df=None):
+def country_view(
+    country_name, spotify_asset_path, geographic_data_path, world_view_df=None
+):
     country_name = "United Kingdom" if country_name is None else country_name
-    country_view_df = world_view() if world_view_df is None else world_view_df
+    country_view_df = (
+        world_view(spotify_asset_path, geographic_data_path)
+        if world_view_df is None
+        else world_view_df
+    )
 
     # Get streams by Artist
     country_view_df = (

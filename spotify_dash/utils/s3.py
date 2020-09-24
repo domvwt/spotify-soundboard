@@ -1,5 +1,6 @@
-import boto3
 import os
+
+import boto3
 from botocore.exceptions import NoCredentialsError, ClientError
 
 
@@ -8,7 +9,7 @@ class BucketObjectConn:
         self.conn = boto3.client(
             "s3",
             aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
-            aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
+            aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
         )
         self.bucket = os.environ["S3_BUCKET_NAME"]
         self.object = object_name
@@ -22,7 +23,10 @@ class BucketObjectConn:
             return False
 
     def upload(self, file_path):
-        print(f"Uploading {file_path.name} to S3://{self.bucket}/{self.object}...", end=" ")
+        print(
+            f"Uploading {file_path.name} to S3://{self.bucket}/{self.object}...",
+            end=" ",
+        )
         try:
             self.conn.upload_file(str(file_path), self.bucket, self.object)
             print("Complete.")
@@ -35,9 +39,12 @@ class BucketObjectConn:
             return False
 
     def download(self, destination_path):
-        print(f"Downloading S3://{self.bucket}/{self.object} to {destination_path}...", end=" ")
+        print(
+            f"Downloading S3://{self.bucket}/{self.object} to {destination_path}...",
+            end=" ",
+        )
         try:
-            self.conn.download_file(self.bucket, self.object, destination_path)
+            self.conn.download_file(self.bucket, self.object, str(destination_path))
             print("Complete.")
             return True
         except ClientError:
@@ -49,7 +56,9 @@ class BucketObjectConn:
 
     def last_update(self):
         try:
-            return self.conn.head_object(Bucket=self.bucket, Key=self.object)["LastModified"]
+            return self.conn.head_object(Bucket=self.bucket, Key=self.object)[
+                "LastModified"
+            ]
         except ClientError:
             print("S3 asset not found")
             return False
