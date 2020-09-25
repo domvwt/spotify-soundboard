@@ -21,8 +21,8 @@ def render_dashboard_status(world_view):
     genres = world_view.loc[:, "Genre"].nunique()
     countries = world_view.loc[:, "Country"].nunique()
     weeks = world_view.loc[:, "date"].nunique()
-    date_start = world_view.loc[:, "date"].min()
-    date_end = world_view.loc[:, "date"].max()
+    date_start = world_view.loc[:, "date"].min().strftime("%Y-%m-%d")
+    date_end = world_view.loc[:, "date"].max().strftime("%Y-%m-%d")
 
     dash_stats = [
         {"name": "Streams", "value": f"{streams:,d}"},

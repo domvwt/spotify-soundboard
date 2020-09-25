@@ -151,3 +151,5 @@ gen
 /spotify_dash/cache-directory-app/
 /.vscode/
 /spotify_dash/resources/processed/spotify_data.pkl.bz
+
+*.pkl

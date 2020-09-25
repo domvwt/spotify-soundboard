@@ -61,7 +61,7 @@ def build_spotify_assets(
         target_columns = expected_columns.replace('"', "").split(",") + ["date", "ISO2"]
 
         def process_csv(file_path: pathlib.Path):
-            date = file_path[-14:-4]
+            date = file_path.name[-14:-4]
             country = file_path.name[:2].upper()
             records = list()
 
@@ -100,7 +100,7 @@ def build_spotify_assets(
     spotify_df_01.loc[:, "Genre"] = (
         spotify_df_01.loc[:, "Artist"]
         .map(lambda x: artist_genre_prime.get(x, None))
-        .astype(pd.CategoricalDtype)
+        .astype(pd.CategoricalDtype())
     )
 
     # Check for new artists.
