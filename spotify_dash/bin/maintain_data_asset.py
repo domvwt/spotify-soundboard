@@ -33,14 +33,14 @@ def main(mode="update"):
     # If spotify asset exists
     if mode == "update":
         if spotify_s3.exists():
-            last_update = get_last_friday(spotify_s3.last_update().date())
+            last_update = spotify_s3.last_update().date()
 
             # Check if spotify asset was last updated more than 7 days ago
             if today - last_update >= dt.timedelta(7):
                 print("Updating spotify assets...")
 
                 # Download new spotify data
-                spotify_downloader.start_date = last_update
+                spotify_downloader.start_date = get_last_friday(last_update)
                 spotify_downloader.end_date = last_friday
 
                 # Returns False if unavailable
