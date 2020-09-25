@@ -1,4 +1,5 @@
 import csv
+import datetime as dt
 import itertools
 import pathlib
 from collections import Counter
@@ -60,7 +61,7 @@ def build_spotify_assets(
         target_columns = expected_columns.replace('"', "").split(",") + ["date", "ISO2"]
 
         def process_csv(file_path: pathlib.Path):
-            date = file_path[-14:-4]
+            date = file_path.name[-14:-4]
             country = file_path.name[:2].upper()
             records = list()
 
@@ -99,7 +100,7 @@ def build_spotify_assets(
     spotify_df_01.loc[:, "Genre"] = (
         spotify_df_01.loc[:, "Artist"]
         .map(lambda x: artist_genre_prime.get(x, None))
-        .astype(pd.CategoricalDtype)
+        .astype(pd.CategoricalDtype())
     )
 
     # Check for new artists.
@@ -144,7 +145,14 @@ def build_spotify_assets(
             lambda x: artist_genre_prime.get(x, None)
         )
 
-    return spotify_df_01, artist_genre_many, artist_genre_prime
+    # Filter two years
+    spotify_df_02 = filter_one_year(spotify_df_01)
+
+    return spotify_df_02, artist_genre_many, artist_genre_prime
+
+
+def filter_one_year(df, date_col="date"):
+    return df.loc[df[date_col] >= df[date_col].max() - dt.timedelta(weeks=51)]
 
 
 def load_spotify_asset(spotify_asset_path):

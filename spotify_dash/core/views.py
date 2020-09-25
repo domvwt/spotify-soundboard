@@ -197,4 +197,3 @@ def tsne_genre_view(
     genre_tsne_df = genre_tsne_df.sort_values(by="Continent")
 
     return genre_tsne_df
-

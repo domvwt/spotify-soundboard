@@ -100,7 +100,7 @@ class SpotifyDownloader:
 
     def is_available(self):
         url = self._url_builder(
-            "global", self.end_date - dt.timedelta(7), self.end_date
+            "global", self.start_date, self.start_date + dt.timedelta(7)
         )
         print(url)
         for _ in range(5):

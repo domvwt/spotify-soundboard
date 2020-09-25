@@ -25,7 +25,7 @@ def main(mode="update"):
     # Calculate dates
     today = dt.datetime.now(dt.timezone.utc).date()
     last_friday = get_last_friday(today)
-    report_start = last_friday - dt.timedelta(weeks=51)
+    report_start = last_friday - dt.timedelta(weeks=53)
 
     # Initialise Spotify downloader
     spotify_downloader = SpotifyDownloader(target_directory=sts.SPOTIFY_DATA_DIR)
@@ -33,7 +33,7 @@ def main(mode="update"):
     # If spotify asset exists
     if mode == "update":
         if spotify_s3.exists():
-            last_update = spotify_s3.last_update().date()
+            last_update = get_last_friday(spotify_s3.last_update().date())
 
             # Check if spotify asset was last updated more than 7 days ago
             if today - last_update >= dt.timedelta(7):
@@ -128,6 +128,10 @@ def main(mode="update"):
         }
 
         spotify_all = spotify_hist.astype(dtypes)
+
+        # Keep two years of data
+        spotify_all = etl.filter_one_year(spotify_all)
+
         iou.compress_pickle(sts.SPOTIFY_ASSET_PATH, spotify_all)
         spotify_s3.upload(sts.SPOTIFY_ASSET_PATH)
 
