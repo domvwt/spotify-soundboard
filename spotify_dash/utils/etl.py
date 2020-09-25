@@ -1,4 +1,5 @@
 import csv
+import datetime as dt
 import itertools
 import pathlib
 from collections import Counter
@@ -144,7 +145,14 @@ def build_spotify_assets(
             lambda x: artist_genre_prime.get(x, None)
         )
 
-    return spotify_df_01, artist_genre_many, artist_genre_prime
+    # Filter two years
+    spotify_df_02 = filter_one_year(spotify_df_01)
+
+    return spotify_df_02, artist_genre_many, artist_genre_prime
+
+
+def filter_one_year(df, date_col="date"):
+    return df.loc[df[date_col] >= df[date_col].max() - dt.timedelta(weeks=51)]
 
 
 def load_spotify_asset(spotify_asset_path):
