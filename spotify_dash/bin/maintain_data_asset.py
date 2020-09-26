@@ -8,7 +8,7 @@ import settings as sts
 import utils.etl as etl
 import utils.io as iou
 import utils.s3 as s3u
-from utils.dates import get_last_friday
+from utils.dates import get_last_friday_from
 from utils.spotify import SpotifyDownloader
 
 
@@ -24,63 +24,58 @@ def main(mode="update"):
 
     # Calculate dates
     today = dt.datetime.now(dt.timezone.utc).date()
-    last_friday = get_last_friday(today)
-    report_start = last_friday - dt.timedelta(weeks=53)
+    last_friday_from_today = get_last_friday_from(today)
+    report_start = last_friday_from_today - dt.timedelta(weeks=53)
 
     # Initialise Spotify downloader
     spotify_downloader = SpotifyDownloader(target_directory=sts.SPOTIFY_DATA_DIR)
 
     # If spotify asset exists
     if mode == "update":
-        if spotify_s3.exists():
-            last_update = spotify_s3.last_update().date()
+        last_update = spotify_s3.last_update().date()
 
-            # Check if spotify asset was last updated more than 7 days ago
-            if today - last_update >= dt.timedelta(7):
-                print("Updating spotify assets...")
+        spotify_downloader.start_date = get_last_friday_from(last_update)
+        spotify_downloader.end_date = last_friday_from_today
 
-                # Download new spotify data
-                spotify_downloader.start_date = get_last_friday(last_update)
-                spotify_downloader.end_date = last_friday
+        # Check if new spotify data available
+        if spotify_downloader.is_available():
+            print("Updating spotify assets...")
+            # Download new spotify data
+            loop = asyncio.get_event_loop()
+            download_success = loop.run_until_complete(
+                spotify_downloader.download(loop)
+            )
 
-                # Returns False if unavailable
-                loop = asyncio.get_event_loop()
-                download_success = loop.run_until_complete(
-                    spotify_downloader.download(loop)
+            if download_success:
+                # Download assets from s3 bucket
+                spotify_s3.download(sts.SPOTIFY_ASSET_PATH)
+                artist_genre_many_s3.download(sts.ARTIST_GENRE_MANY_PATH)
+                artist_genre_prime_s3.download(sts.ARTIST_GENRE_PRIME_PATH)
+
+                # Unpickle spotify assets
+                spotify_hist = iou.decompress_pickle(sts.SPOTIFY_ASSET_PATH)
+                artist_genre_many = iou.load_pickle(sts.ARTIST_GENRE_MANY_PATH)
+                artist_genre_prime = iou.load_pickle(sts.ARTIST_GENRE_PRIME_PATH)
+
+                # Aggregate spotify data
+                (
+                    spotify_new,
+                    artist_genre_many_new,
+                    artist_genre_prime_new,
+                ) = etl.build_spotify_assets(
+                    sts.SPOTIFY_DATA_DIR,
+                    start_date=report_start,
+                    artist_genre_many=artist_genre_many,
+                    artist_genre_prime=artist_genre_prime,
                 )
+                spotify_all = spotify_hist.merge(
+                    spotify_new, how="left"
+                ).drop_duplicates()
 
-                if download_success:
-                    # Download assets from s3 bucket
-                    spotify_s3.download(sts.SPOTIFY_ASSET_PATH)
-                    artist_genre_many_s3.download(sts.ARTIST_GENRE_MANY_PATH)
-                    artist_genre_prime_s3.download(sts.ARTIST_GENRE_PRIME_PATH)
-
-                    # Unpickle spotify assets
-                    spotify_hist = iou.decompress_pickle(sts.SPOTIFY_ASSET_PATH)
-                    artist_genre_many = iou.load_pickle(sts.ARTIST_GENRE_MANY_PATH)
-                    artist_genre_prime = iou.load_pickle(sts.ARTIST_GENRE_PRIME_PATH)
-
-                    # Aggregate spotify data
-                    (
-                        spotify_new,
-                        artist_genre_many_new,
-                        artist_genre_prime_new,
-                    ) = etl.build_spotify_assets(
-                        sts.SPOTIFY_DATA_DIR,
-                        start_date=report_start,
-                        artist_genre_many=artist_genre_many,
-                        artist_genre_prime=artist_genre_prime,
-                    )
-                    spotify_all = spotify_hist.merge(
-                        spotify_new, how="left"
-                    ).drop_duplicates()
-
-                else:
-                    print("Spotify data unavailable.")
-                    return False
             else:
-                print("Update not required!")
+                print("Spotify data unavailable.")
                 return False
+
         else:
             print("S3 asset not found. Please check configuration.")
             return False
@@ -88,7 +83,7 @@ def main(mode="update"):
     elif mode == "deploy":
         # Download spotify data
         spotify_downloader.start_date = report_start
-        spotify_downloader.end_date = last_friday
+        spotify_downloader.end_date = last_friday_from_today
 
         loop = asyncio.get_event_loop()
         download_success = loop.run_until_complete(spotify_downloader.download(loop))
