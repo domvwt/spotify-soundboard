@@ -8,7 +8,7 @@ import aiohttp
 import async_timeout
 import requests
 
-from utils.dates import get_last_friday
+from utils.dates import get_last_friday_from
 
 
 class SpotifyDownloader:
@@ -112,7 +112,7 @@ class SpotifyDownloader:
 
     def generate_urls(self, countries, start_date, end_date):
         def generate_dates(start_date_, end_date_):
-            period_start = get_last_friday(start_date_)
+            period_start = get_last_friday_from(start_date_)
             period_end = period_start + dt.timedelta(7)
 
             while period_end <= end_date_:
