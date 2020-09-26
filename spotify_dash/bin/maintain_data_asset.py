@@ -73,11 +73,11 @@ def main(mode="update"):
                 ).drop_duplicates()
 
             else:
-                print("Spotify data unavailable.")
+                print("Spotify download failed!")
                 return False
 
         else:
-            print("S3 asset not found. Please check configuration.")
+            print("No new Spotify data available.")
             return False
 
     elif mode == "deploy":
