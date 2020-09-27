@@ -168,7 +168,8 @@ def country_tsne_clustering(chart_data, plot3d=False):
 
 @bg()
 def genre_tree(chart_data):
-    chart_data = chart_data.loc[chart_data.Streams >= 1.5e7, :]
+    chart_data = chart_data.groupby(["Artist", "Genre"]).sum()
+    chart_data = chart_data.loc[chart_data.Streams >= 1e8, :]
     chart_data = chart_data.reset_index()
     fig = px.treemap(
         data_frame=chart_data,
