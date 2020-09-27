@@ -32,9 +32,9 @@ def main(mode="update"):
 
     # If spotify asset exists
     if mode == "update":
-        last_update = spotify_s3.last_update().date()
+        last_update = spotify_s3.last_data_date()
 
-        spotify_downloader.start_date = get_last_friday_from(last_update)
+        spotify_downloader.start_date = last_update + dt.timedelta(days=7)
         spotify_downloader.end_date = last_friday_from_today
 
         # Check if new spotify data available
@@ -69,15 +69,17 @@ def main(mode="update"):
                     artist_genre_prime=artist_genre_prime,
                 )
                 spotify_all = spotify_hist.merge(
-                    spotify_new, how="left"
+                    spotify_new, how="outer"
                 ).drop_duplicates()
 
+                spotify_all = etl.filter_one_year(spotify_all)
+
             else:
-                print("Spotify data unavailable.")
+                print("Spotify download failed!")
                 return False
 
         else:
-            print("S3 asset not found. Please check configuration.")
+            print("No new Spotify data available.")
             return False
 
     elif mode == "deploy":
@@ -128,7 +130,7 @@ def main(mode="update"):
         spotify_all = etl.filter_one_year(spotify_all)
 
         iou.compress_pickle(sts.SPOTIFY_ASSET_PATH, spotify_all)
-        spotify_s3.upload(sts.SPOTIFY_ASSET_PATH)
+        spotify_s3.upload(sts.SPOTIFY_ASSET_PATH, last_data_date=spotify_all.date.max())
 
         return True
     else:
@@ -139,7 +141,7 @@ def main(mode="update"):
     iou.save_pickle(sts.ARTIST_GENRE_MANY_PATH, artist_genre_many_new)
     iou.save_pickle(sts.ARTIST_GENRE_PRIME_PATH, artist_genre_prime_new)
 
-    spotify_s3.upload(sts.SPOTIFY_ASSET_PATH)
+    spotify_s3.upload(sts.SPOTIFY_ASSET_PATH, last_data_date=spotify_all.date.max())
     artist_genre_many_s3.upload(sts.ARTIST_GENRE_MANY_PATH)
     artist_genre_prime_s3.upload(sts.ARTIST_GENRE_PRIME_PATH)
 

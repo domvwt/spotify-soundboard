@@ -102,7 +102,6 @@ class SpotifyDownloader:
         url = self._url_builder(
             "global", self.start_date, self.start_date + dt.timedelta(7)
         )
-        print(url)
         for _ in range(5):
             response = requests.get(url)
             if response.ok:
