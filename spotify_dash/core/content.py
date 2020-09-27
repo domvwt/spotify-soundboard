@@ -290,8 +290,8 @@ def render_artists_trends(artist_view, world_view):
                                 dbc.RadioItems(
                                     id="artist-trends-date-options",
                                     options=[
-                                        {"label": "Snapshot", "value": "snapshot",},
-                                        {"label": "Cumulative", "value": "cumulative",},
+                                        {"label": "Snapshot", "value": "snapshot"},
+                                        {"label": "Cumulative", "value": "cumulative"},
                                     ],
                                     value="snapshot",
                                 ),
@@ -308,7 +308,7 @@ def render_artists_trends(artist_view, world_view):
                             dbc.Checklist(
                                 id="artist-trends-axis-options",
                                 options=[
-                                    {"label": "Log y Axis", "value": "log-y",},
+                                    {"label": "Log y Axis", "value": "log-y"},
                                     {
                                         "label": "Rolling 4wk Avg.",
                                         "value": "rolling-avg",
@@ -336,7 +336,10 @@ def render_artists_trends(artist_view, world_view):
                         id="artist-trends-selection",
                         style={"padding-left": 0},
                         options=artist_options,
-                        value=artist_view.loc[:10, "Artist"],
+                        value=artist_view.groupby("Artist")["Streams"]
+                        .sum()
+                        .sort_values()[:10]
+                        .index,
                         multi=True,
                     ),
                 ),
@@ -359,7 +362,7 @@ def render_genre_space(world_view):
                             children=[
                                 dbc.Label("3D"),
                                 dbc.Checklist(
-                                    style={"padding-left": 20, "padding-bottom": 5,},
+                                    style={"padding-left": 20, "padding-bottom": 5},
                                     id="tsne-dimension",
                                     options=[dict(label="", value=True)],
                                     value=False,
