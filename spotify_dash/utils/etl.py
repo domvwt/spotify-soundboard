@@ -47,7 +47,6 @@ def build_spotify_assets(
     artist_genre_prime: dict,
     start_date=None,
 ):
-
     weekly_data = spotify_weekly_dir.iterdir()
 
     spotify_weekly_paths = [
@@ -145,10 +144,7 @@ def build_spotify_assets(
             lambda x: artist_genre_prime.get(x, None)
         )
 
-    # Filter two years
-    spotify_df_02 = filter_one_year(spotify_df_01)
-
-    return spotify_df_02, artist_genre_many, artist_genre_prime
+    return spotify_df_01, artist_genre_many, artist_genre_prime
 
 
 def filter_one_year(df, date_col="date"):

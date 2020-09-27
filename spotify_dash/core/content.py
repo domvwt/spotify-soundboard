@@ -4,6 +4,7 @@ import dash_html_components as html
 import dash_table as ddt
 import numpy as np
 from dash_table.Format import Format
+import datetime as dt
 
 from core import charts as charts, views as views
 
@@ -22,7 +23,7 @@ def render_dashboard_status(world_view):
     countries = world_view.loc[:, "Country"].nunique()
     weeks = world_view.loc[:, "date"].nunique()
     date_start = world_view.loc[:, "date"].min().strftime("%Y-%m-%d")
-    date_end = world_view.loc[:, "date"].max().strftime("%Y-%m-%d")
+    date_end = (world_view.loc[:, "date"].max() + dt.timedelta(6)).strftime("%Y-%m-%d")
 
     dash_stats = [
         {"name": "Streams", "value": f"{streams:,d}"},
