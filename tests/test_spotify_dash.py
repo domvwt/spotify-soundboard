@@ -1,4 +1,4 @@
-from spotify_soundboard import __version__
+from spotify_dash import __version__
 
 
 def test_version():

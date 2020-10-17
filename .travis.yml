@@ -6,3 +6,5 @@ before install:
   - pip install poetry
 install:
   - poetry install
+script:
+  - pytest
