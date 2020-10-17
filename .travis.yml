@@ -6,5 +6,3 @@ before install:
   - pip install poetry
 install:
   - poetry install
-script:
-  - cd spotify_dash && python -m bin.download_data && gunicorn app:server
