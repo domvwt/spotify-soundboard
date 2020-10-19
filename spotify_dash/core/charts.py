@@ -88,7 +88,6 @@ def artist_trends(chart_data, log=False):
             y="Streams",
             labels={"date": "Date"},
             color="Artist",
-            # color_discrete_sequence=SEQ_COLS,
         )
     else:
         fig = go.Figure()
