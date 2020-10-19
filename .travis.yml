@@ -7,7 +7,6 @@ before install:
 install:
   - poetry install
 script:
-  - poetry shell
   - black .
   - flake8 --maximum-line-length 120
   - pytest
