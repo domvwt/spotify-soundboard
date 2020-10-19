@@ -9,7 +9,6 @@ import core.content as cnt
 import core.views as views
 import settings as sts
 
-# TODO: Decouple data pipeline from dashboard - move data to cloud storage
 
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard"

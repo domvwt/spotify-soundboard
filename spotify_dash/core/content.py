@@ -78,8 +78,8 @@ def render_dashboard_status(world_view):
                                         children=[
                                             dcc.Markdown(
                                                 children=[
-                                                    f"This report was generated using data for the weekly **top 100** streamed tracks "
-                                                    f"in each country for each of the last **{weeks}** weeks."
+                                                    "This report was generated using data for the **top 100** streamed "
+                                                    f"tracks in each country over the last **{weeks}** weeks."
                                                 ]
                                             ),
                                             html.P(),
