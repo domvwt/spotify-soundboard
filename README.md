@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/domvwt/spotify-soundboard.svg?branch=development)](https://travis-ci.com/domvwt/spotify-soundboard)
+
 # Spotify Soundboard
 
 An interactive visualisation of music streaming around the world.
