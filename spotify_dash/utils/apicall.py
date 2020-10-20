@@ -5,6 +5,7 @@ import requests
 from tqdm import tqdm
 
 import spotify_dash.settings as sts
+
 sts.load_dotenv()
 
 BASE_URL = "https://api.spotify.com/v1/"
@@ -97,4 +98,4 @@ def get_genres_from_tracks(track_ids: List[str]):
 
 def divide_chunks(iterable, n):
     for i in range(0, len(iterable), n):
-        yield iterable[i: i + n]
+        yield iterable[i : i + n]
