@@ -7,12 +7,12 @@ before install:
 install:
   - poetry install
 script:
-  - black .
+  - black --check .
   - flake8 --max-line-length 120 --ignore=E203
   - pytest
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
-  app: "spotify-soundboard-app"
+  app: "spotify-soundboard"
   on:
     branch: master
