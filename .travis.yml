@@ -16,4 +16,3 @@ deploy:
   app: "spotify-soundboard"
   on:
     branch: master
-    python: "3.8"
