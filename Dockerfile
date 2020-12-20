@@ -23,6 +23,6 @@ RUN poetry config virtualenvs.create false \
 # Creating folders, and files for a project:
 COPY . /code
 
-WORKDIR /spotify_dash
+WORKDIR /code/spotify_dash
 
 CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:server"]

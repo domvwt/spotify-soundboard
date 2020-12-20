@@ -4,10 +4,10 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask_caching import Cache
 
-import core.charts as charts
-import core.content as cnt
-import core.views as views
-import jobs.download_data as dld
+from core import charts
+from core import content as cnt
+from core import views as views
+from jobs import download_data as dld
 import settings as sts
 
 
