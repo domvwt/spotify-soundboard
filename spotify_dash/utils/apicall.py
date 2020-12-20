@@ -4,7 +4,7 @@ from typing import List
 import requests
 from tqdm import tqdm
 
-import spotify_dash.settings as sts
+import settings as sts
 
 sts.load_dotenv()
 
