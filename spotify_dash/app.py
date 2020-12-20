@@ -7,6 +7,7 @@ from flask_caching import Cache
 import core.charts as charts
 import core.content as cnt
 import core.views as views
+import jobs.download_data as dld
 import settings as sts
 
 
@@ -213,4 +214,5 @@ def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
 
 
 if __name__ == "__main__":
+    dld.download_spotify_asset()
     app.run_server(debug=True)
