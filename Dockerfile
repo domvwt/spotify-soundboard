@@ -25,4 +25,4 @@ COPY . /code
 
 WORKDIR spotify_dash
 
-CMD ["gunicorn app:server"]
+CMD ["gunicorn", "app:server"]
