@@ -1,4 +1,4 @@
-FROM python:3.6.6-alpine3.7
+FROM python:3.8.5
 
 ENV YOUR_ENV=${YOUR_ENV} \
   PYTHONFAULTHANDLER=1 \
@@ -23,4 +23,6 @@ RUN poetry config virtualenvs.create false \
 # Creating folders, and files for a project:
 COPY . /code
 
-CMD ["cd", "spotify_dash", "&&", "python", "-m", "bin.download_data", "&&", "gunicorn app:server"]
+WORKDIR spotify_dash
+
+CMD ["python", "-m", "bin.download_data", "&&", "gunicorn app:server"]
