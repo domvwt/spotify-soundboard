@@ -26,6 +26,7 @@ TIMEOUT = 1800  # In seconds; 1800s = 30 minutes
 
 @cache.memoize(timeout=TIMEOUT)
 def cached_world_view():
+    dld.download_spotify_asset()
     return views.world_view(sts.SPOTIFY_ASSET_PATH, sts.GEOGRAPHY_DATA_PATH)
 
 
@@ -214,5 +215,4 @@ def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
 
 
 if __name__ == "__main__":
-    dld.download_spotify_asset()
-    app.run_server(debug=True)
+    app.run_server()
