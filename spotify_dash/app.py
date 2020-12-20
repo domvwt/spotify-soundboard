@@ -23,10 +23,11 @@ server = app.server
 
 TIMEOUT = 1800  # In seconds; 1800s = 30 minutes
 
+dld.download_spotify_asset()
+
 
 @cache.memoize(timeout=TIMEOUT)
 def cached_world_view():
-    dld.download_spotify_asset()
     return views.world_view(sts.SPOTIFY_ASSET_PATH, sts.GEOGRAPHY_DATA_PATH)
 
 
