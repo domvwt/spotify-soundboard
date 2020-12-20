@@ -4,9 +4,10 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask_caching import Cache
 
-import core.charts as charts
-import core.content as cnt
-import core.views as views
+from core import charts
+from core import content as cnt
+from core import views as views
+from jobs import download_data as dld
 import settings as sts
 
 
@@ -21,6 +22,8 @@ cache = Cache(
 server = app.server
 
 TIMEOUT = 1800  # In seconds; 1800s = 30 minutes
+
+dld.download_spotify_asset()
 
 
 @cache.memoize(timeout=TIMEOUT)
@@ -213,4 +216,4 @@ def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server()

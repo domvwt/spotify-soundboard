@@ -1,1 +1,1 @@
-web: cd spotify_dash && python -m bin.download_data && gunicorn app:server
+web: cd spotify_dash && python -m jobs.download_data && gunicorn app:server
