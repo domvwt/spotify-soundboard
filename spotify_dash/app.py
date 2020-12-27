@@ -128,7 +128,7 @@ app.layout = html.Div(
                             width={"size": 1, "offset": 0},
                             children=[
                                 html.A(
-                                    "GitHub",
+                                    "Github",
                                     href="https://github.com/domvwt/spotify-soundboard/tree/master",
                                     style={"color": cnt.SILVER},
                                 )
@@ -216,4 +216,4 @@ def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server()

@@ -87,7 +87,7 @@ def render_dashboard_status(world_view):
                                                 children=[
                                                     "Code available on ",
                                                     html.A(
-                                                        "GitHub.",
+                                                        "Github.",
                                                         href="https://github.com/domvwt/spotify-soundboard/tree/master",
                                                         style={"color": "thistle"},
                                                     ),
@@ -420,7 +420,7 @@ def render_genre_space(world_view):
 def render_genre_tree(world_view):
     return [
         html.Div(
-            style={"margin-bottom": "60px"},
+            style={"margin-bottom": "15vh"},
             children=[
                 html.H1("Genre Map"),
                 dcc.Graph(
