@@ -44,73 +44,85 @@ def render_dashboard_status(world_view):
             children=[
                 dbc.Col(
                     md=12,
+                    lg=8,
+                    style={"padding-left": 22, "margin-bottom": 15,},
+                    children=html.H1("Spotify Soundboard", className="display-4"),
+                ),
+                dbc.Col(md=12, lg=2,),
+            ],
+        ),
+        dbc.Row(
+            justify="around",
+            children=[
+                dbc.Col(
+                    md=12,
                     lg=5,
                     align="start",
-                    style={"margin-bottom": 15},
-                    children=html.Div(
-                        style={"padding-left": 8},
-                        children=[
-                            html.H1("Spotify Soundboard", style={"margin-bottom": 15}),
-                            html.Div(
-                                style={"padding-left": 5},
-                                children=[
-                                    html.P(
-                                        "An interactive visualisation of music streaming around the world."
-                                    ),
-                                    html.Span(
-                                        children=[
-                                            "Powered by ",
-                                            html.A(
-                                                "Dash ",
-                                                href="https://plotly.com/dash/",
-                                                style={"color": "thistle"},
-                                            ),
-                                            "with data from ",
-                                            html.A(
-                                                "Spotify.",
-                                                href="https://spotifycharts.com/regional",
-                                                style={"color": "thistle"},
-                                            ),
-                                        ]
-                                    ),
-                                    html.P(),
-                                    html.Span(
-                                        children=[
-                                            dcc.Markdown(
-                                                children=[
-                                                    "This report was generated using data for the **top 100** streamed "
-                                                    f"tracks in each country over the last **{weeks}** weeks."
-                                                ]
-                                            ),
-                                            html.P(),
-                                            html.Span(
-                                                children=[
-                                                    "Code available on ",
-                                                    html.A(
-                                                        "Github.",
-                                                        href="https://github.com/domvwt/spotify-soundboard/tree/master",
-                                                        style={"color": "thistle"},
-                                                    ),
-                                                ]
-                                            ),
-                                        ]
-                                    ),
-                                ],
-                            ),
-                        ],
-                    ),
+                    style={"margin-bottom": 15,},
+                    children=[
+                        html.Div(
+                            style={
+                                "padding-left": 13,
+                                "margin-bottom": 15,
+                                "font-size": "1.1rem",
+                            },
+                            children=[
+                                html.P(
+                                    "An interactive visualisation of music streaming around the world."
+                                ),
+                                html.Span(
+                                    children=[
+                                        "Powered by ",
+                                        html.A(
+                                            "Dash ",
+                                            href="https://plotly.com/dash/",
+                                            style={"color": "thistle"},
+                                        ),
+                                        "with data from ",
+                                        html.A(
+                                            "Spotify.",
+                                            href="https://spotifycharts.com/regional",
+                                            style={"color": "thistle"},
+                                        ),
+                                    ]
+                                ),
+                                html.P(),
+                                html.Span(
+                                    children=[
+                                        dcc.Markdown(
+                                            children=[
+                                                "This report was generated using data for the **top 100** streamed "
+                                                f"tracks in each country over the last **{weeks}** weeks."
+                                            ]
+                                        ),
+                                        html.P(),
+                                        html.Span(
+                                            children=[
+                                                "Code available on ",
+                                                html.A(
+                                                    "Github.",
+                                                    href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                                    style={"color": "thistle"},
+                                                ),
+                                            ]
+                                        ),
+                                    ]
+                                ),
+                            ],
+                        ),
+                    ],
                 ),
                 dbc.Col(
                     md=12,
                     lg=5,
                     align="center",
                     children=html.Div(
-                        style={"padding-top": 30, "padding-left": 13},
+                        style={"padding-left": 13, "font-size": "1.1rem"},
                         children=stats_object,
                     ),
                 ),
             ],
-        )
+        ),
     ]
 
 
@@ -420,7 +432,7 @@ def render_genre_space(world_view):
 def render_genre_tree(world_view):
     return [
         html.Div(
-            style={"margin-bottom": "15vh"},
+            style={"margin-bottom": 60},
             children=[
                 html.H1("Genre Map"),
                 dcc.Graph(
