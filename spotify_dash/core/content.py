@@ -45,7 +45,7 @@ def render_dashboard_status(world_view):
                 dbc.Col(
                     md=12,
                     lg=8,
-                    style={"padding-left": 22, "margin-bottom": 15,},
+                    style={"padding-left": 22, "margin-bottom": 15},
                     children=html.H1("Spotify Soundboard", className="display-4"),
                 ),
                 dbc.Col(md=12, lg=2,),
@@ -58,7 +58,7 @@ def render_dashboard_status(world_view):
                     md=12,
                     lg=5,
                     align="start",
-                    style={"margin-bottom": 15,},
+                    style={"margin-bottom": 15},
                     children=[
                         html.Div(
                             style={
