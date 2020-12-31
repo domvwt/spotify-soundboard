@@ -79,8 +79,6 @@ def render_dashboard_status(world_view):
                                                 f"tracks in each country over the last **{weeks}** weeks."
                                             ]
                                         ),
-                                        html.Br(),
-                                        # html.Br(),
                                         html.Span(
                                             children=[
                                                 "See the code on ",
