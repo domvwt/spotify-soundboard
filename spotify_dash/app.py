@@ -119,18 +119,9 @@ app.layout = html.Div(
                             width={"size": 1, "offset": 1},
                             children=[
                                 html.A(
-                                    "LinkedIn",
-                                    href="https://www.linkedin.com/in/dominic-thorn/",
-                                    style={"color": cnt.SILVER},
-                                )
-                            ],
-                        ),
-                        dbc.Col(
-                            width={"size": 1, "offset": 0},
-                            children=[
-                                html.A(
-                                    "GitHub",
-                                    href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                    "domvwt",
+                                    className="lead",
+                                    href="https://domvwt.github.io",
                                     style={"color": cnt.SILVER},
                                 )
                             ],

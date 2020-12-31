@@ -70,38 +70,33 @@ def render_dashboard_status(world_view):
                                 html.P(
                                     "An interactive visualisation of music streaming around the world."
                                 ),
-                                html.Span(
-                                    children=[
-                                        "Powered by ",
-                                        html.A(
-                                            "Dash ",
-                                            href="https://plotly.com/dash/",
-                                            style={"color": "thistle"},
-                                        ),
-                                        "with data from ",
-                                        html.A(
-                                            "Spotify.",
-                                            href="https://spotifycharts.com/regional",
-                                            style={"color": "thistle"},
-                                        ),
-                                    ]
-                                ),
                                 html.P(),
                                 html.Span(
                                     children=[
                                         dcc.Markdown(
                                             children=[
-                                                "This report was generated using data for the **top 100** streamed "
+                                                "Updated weekly with data for the **top 100** streamed "
                                                 f"tracks in each country over the last **{weeks}** weeks."
                                             ]
                                         ),
-                                        html.P(),
+                                        html.Br(),
+                                        # html.Br(),
                                         html.Span(
                                             children=[
-                                                "Code available on ",
+                                                "See the code on ",
                                                 html.A(
-                                                    "Github.",
+                                                    "GitHub",
                                                     href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                                    style={"color": "thistle"},
+                                                ),
+                                            ]
+                                        ),
+                                        html.Span(
+                                            children=[
+                                                " or say hello at ",
+                                                html.A(
+                                                    "domvwt.",
+                                                    href="https://domvwt.github.io",
                                                     style={"color": "thistle"},
                                                 ),
                                             ]
