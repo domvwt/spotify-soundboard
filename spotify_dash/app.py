@@ -1,3 +1,4 @@
+import sys
 import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
@@ -118,18 +119,9 @@ app.layout = html.Div(
                             width={"size": 1, "offset": 1},
                             children=[
                                 html.A(
-                                    "LinkedIn",
-                                    href="https://www.linkedin.com/in/dominic-thorn/",
-                                    style={"color": cnt.SILVER},
-                                )
-                            ],
-                        ),
-                        dbc.Col(
-                            width={"size": 1, "offset": 0},
-                            children=[
-                                html.A(
-                                    "Github",
-                                    href="https://github.com/domvwt/spotify-soundboard/tree/master",
+                                    "domvwt",
+                                    className="lead",
+                                    href="https://domvwt.github.io",
                                     style={"color": cnt.SILVER},
                                 )
                             ],
@@ -216,4 +208,5 @@ def update_country_clustering(tsne_3d, tsne_pca, tsne_perplexity, regen):
 
 
 if __name__ == "__main__":
-    app.run_server()
+    debug = True if "--debug" in sys.argv else False
+    app.run_server(debug=debug)
