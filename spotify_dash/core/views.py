@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
-import utils.etl as etl
+from spotify_dash.utils import etl
 
 
 def world_view(spotify_asset_path, geographic_data_path) -> pd.DataFrame:

@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from core.content import SILVER
+from spotify_dash.core.content import SILVER
 
 SEQ_COLS = px.colors.sequential.Agsunset
 

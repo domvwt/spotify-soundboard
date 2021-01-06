@@ -8,8 +8,8 @@ from typing import Iterable
 import pandas as pd
 from tqdm import tqdm
 
-import utils.io as iou
-from utils import apicall as api
+import spotify_dash.utils.io as iou
+import spotify_dash.utils.apicall as api
 
 
 # TODO: Replace os with pathlib
