@@ -6,7 +6,8 @@ import numpy as np
 from dash_table.Format import Format
 import datetime as dt
 
-from core import charts as charts, views as views
+from spotify_dash.core import charts
+from spotify_dash.core import views
 
 SILVER = "rgb(131, 148, 150)"
 SLATE = "rgb(30, 67, 74)"
