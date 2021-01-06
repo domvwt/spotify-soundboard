@@ -4,12 +4,12 @@ import shutil
 
 import pandas as pd
 
-import settings as sts
-import utils.etl as etl
-import utils.io as iou
-import utils.s3 as s3u
-from utils.dates import get_last_friday_from
-from utils.spotify import SpotifyDownloader
+import spotify_dash.settings as sts
+import spotify_dash.utils.etl as etl
+import spotify_dash.utils.io as iou
+import spotify_dash.utils.s3 as s3u
+from spotify_dash.utils.dates import get_last_friday_from
+from spotify_dash.utils.spotify import SpotifyDownloader
 
 
 def main(mode="update"):

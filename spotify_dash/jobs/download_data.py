@@ -1,5 +1,5 @@
-import settings as sts
-import utils.s3 as s3u
+import spotify_dash.settings as sts
+import spotify_dash.utils.s3 as s3u
 
 
 from datetime import datetime

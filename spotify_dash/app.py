@@ -5,11 +5,11 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask_caching import Cache
 
-from core import charts
-from core import content as cnt
-from core import views as views
-from jobs import download_data as dld
-import settings as sts
+from spotify_dash.core import charts
+import spotify_dash.core.content as cnt
+import spotify_dash.core.views as views
+import spotify_dash.jobs.download_data as dld
+import spotify_dash.settings as sts
 
 
 app = dash.Dash(

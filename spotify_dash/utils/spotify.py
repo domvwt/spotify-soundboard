@@ -8,7 +8,7 @@ import aiohttp
 import async_timeout
 import requests
 
-from utils.dates import get_last_friday_from
+from spotify_dash.utils.dates import get_last_friday_from
 
 
 class SpotifyDownloader:
