@@ -1,7 +1,6 @@
-FROM python:3.8.5
+FROM python:3.8.5-slim-buster AS base
 
-ENV YOUR_ENV=${YOUR_ENV} \
-  PYTHONFAULTHANDLER=1 \
+ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
@@ -9,20 +8,30 @@ ENV YOUR_ENV=${YOUR_ENV} \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=1.0.0
 
-# System deps:
+
+# Build distribution package for base envionment
+FROM base AS builder
+
 RUN pip install "poetry==$POETRY_VERSION"
 
-# Copy only requirements to cache them in docker layer
-WORKDIR /code
-COPY poetry.lock pyproject.toml /code/
+COPY pyproject.toml poetry.lock /
+RUN poetry export -f requirements.txt -o requirements.txt --without-hashes
 
-# Project initialization:
+COPY . .
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+    && poetry build --format wheel
 
-# Creating folders, and files for a project:
-COPY . /code
 
-WORKDIR /code/spotify_dash
+# Install package on base image
+FROM base AS production
+WORKDIR /project/
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:server"]
+COPY --from=builder requirements.txt /project/
+RUN pip install -r requirements.txt \
+    && rm -rf requirements.txt
+
+COPY --from=builder dist/*.whl /project/dist/ 
+RUN pip install --no-deps dist/*.whl \
+    && rm -rf dist
+
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "spotify_dash.app:server"]
