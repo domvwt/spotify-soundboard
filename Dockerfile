@@ -35,3 +35,5 @@ RUN pip install --no-deps dist/*.whl \
     && rm -rf dist
 
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8080"]
+
+CMD ["spotify_dash.dashapp:server"]
