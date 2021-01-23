@@ -34,4 +34,4 @@ COPY --from=builder dist/*.whl /project/dist/
 RUN pip install --no-deps dist/*.whl \
     && rm -rf dist
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "spotify_dash.app:server"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8080"]
