@@ -9,7 +9,7 @@ app = Flask(__name__)
 def run_update():
     proc = Process(target=mda.main(mode="update"))
     proc.start()
-    return "Data update process triggered - see container logs for more info."
+    return "Data update process triggered - see container logs for more info.", 200
 
 
 if __name__ == "__main__":
