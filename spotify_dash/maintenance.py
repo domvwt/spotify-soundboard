@@ -1,19 +1,31 @@
-from flask import Flask
+from flask import Flask, request
 from multiprocessing import Process
 import spotify_dash.jobs.maintain_data_asset as mda
 
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["POST"])
 def run_update():
-    proc = Process(target=mda.main(mode="update", daemon=True))
-    proc.start()
-<<<<<<< HEAD
-    return "Data update process triggered - see container logs for more info.", 202
-=======
-    return "Data update process triggered - see container logs for more info.", 200
->>>>>>> 5c9eb81ec3386e726e3f52b40508a3b2cf76bd85
+    envelope = request.get_json()
+
+    if not envelope:
+        msg = "no Pub/Sub message received"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(envelope, dict) or "message" not in envelope:
+        msg = "invalid Pub/Sub message format"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    pubsub_message = envelope["message"]
+
+    if isinstance(pubsub_message, dict) and "data" in pubsub_message:
+        proc = Process(target=mda.main(mode="update", daemon=True))
+        proc.start()
+
+    return ("Data update process triggered.", 204)
 
 
 if __name__ == "__main__":
