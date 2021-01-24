@@ -12,6 +12,8 @@ import spotify_dash.jobs.download_data as dld
 import spotify_dash.settings as sts
 
 
+print("Starting Dashboard application.")
+
 app = dash.Dash(
     __name__, external_stylesheets=[dbc.themes.SOLAR], title="SpotifySoundboard"
 )
