@@ -27,7 +27,7 @@ def index():
         pubsub_message = envelope["message"]
 
         if isinstance(pubsub_message, dict) and "data" in pubsub_message:
-            proc = Process(target=mda.main(mode="update", daemon=True))
+            proc = Process(target=mda.main(mode="update"), daemon=True)
             proc.start()
 
         return ("Data update process triggered.", 204)
